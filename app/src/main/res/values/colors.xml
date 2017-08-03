@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#4072be</color>
+    <color name="colorPrimaryDark">#2e5186</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="background">#747474</color>
+
+    <color name="sensorStatusAccuracyLow">#c40000</color>
+    <color name="sensorStatusAccuracyMedium">#c9c900</color>
+    <color name="sensorStatusAccuracyHigh">#21c400</color>
+    <color name="sensorStatusUnreliable">#646464</color>
+</resources>

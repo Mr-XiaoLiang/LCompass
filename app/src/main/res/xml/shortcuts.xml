@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="about"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher_round"
+        android:shortcutShortLabel="@string/title_activity_about"
+        android:shortcutLongLabel="@string/title_activity_about">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.liang.lollipop.lcompass"
+            android:targetClass="com.liang.lollipop.lcompass.activity.AboutActivity" />
+        <categories android:name="android.shortcut.conversation"/>
+    </shortcut>
+    <shortcut
+        android:shortcutId="setting"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher_round"
+        android:shortcutShortLabel="@string/title_activity_setting"
+        android:shortcutLongLabel="@string/title_activity_setting">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.liang.lollipop.lcompass"
+            android:targetClass="com.liang.lollipop.lcompass.activity.SettingActivity" />
+        <categories android:name="android.shortcut.conversation"/>
+    </shortcut>
+</shortcuts>
