@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
@@ -70,6 +71,8 @@ public class LCropImageView extends AppCompatImageView {
     private float lastScale = 1;
     //绘制用的范围
     private Rect drawRect;
+    //位移Point
+    private Point translatePoint;
 
     public LCropImageView(Context context) {
         this(context,null);
@@ -193,35 +196,70 @@ public class LCropImageView extends AppCompatImageView {
         //保存Canvas的状态，并且偏移画板，然后绘制矩形
         //模拟用户手指拖拽图片之后的效果
         canvas.save();
-        canvas.translate(offsetPoint.x*-1,offsetPoint.y*-1);
-        canvas.drawRect(getDrawRect(),drawPaint);
+        Point t = getTranslate();
+        canvas.translate(t.x,t.y);
+        canvas.drawRect(getDrawRect(t),drawPaint);
         canvas.restore();
         //如果蒙版存在，就让画板绘制
         if(option.maskDrawable!=null)
             option.maskDrawable.draw(canvas);
+
+        Paint paint = new Paint();
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setColor(Color.RED);
+//        canvas.drawColor(0x8000FF00);
+        canvas.drawRect(windowBound,paint);
     }
 
-    private Rect getDrawRect(){
+    private Point getTranslate(){
+        if(translatePoint==null)
+            initCropImageView();
+        //反向移动绘制坐标系，模拟图片被拖拽效果
+        int x = offsetPoint.x+getPaddingLeft();
+        int y = offsetPoint.y+getPaddingTop();
+        //如果左侧拖拽到了窗口的边界，那么就拒绝移动
+        if(x>windowBound.left)
+            x = (int) (windowBound.left);
+        //如果右侧拖拽到了窗口边界，那么就拒绝继续拖拽
+        if(extendPoint.x-x<windowBound.right)
+            x = (int) (extendPoint.x-windowBound.right);
+        //如果顶部拖拽超过了窗口，那么就等于窗口
+        if(y>windowBound.top)
+            y = (int) (windowBound.top);
+        //如果底部超过了窗口，那么就等于窗口
+        if(extendPoint.y-y<windowBound.bottom)
+            y = (int) (extendPoint.y-windowBound.bottom);
+
+        translatePoint.set(x,y);
+        return translatePoint;
+    }
+
+    private Rect getDrawRect(Point translate){
+        //默认是全屏显示
         float left = getPaddingLeft();
-        if(-offsetPoint.x>windowBound.left)
-            left = 0;
-
         float top = getPaddingTop();
-        if(-offsetPoint.y>windowBound.top)
-            top = 0;
+        float right = getWidth()-getPaddingRight();
+        float bottom = getHeight()-getPaddingBottom();
 
-        float right = left+getWidth()-getPaddingRight();
-        if(extendPoint.x+offsetPoint.x<windowBound.right)
-            right = windowBound.right;
+        //如果边界被拖拽到了屏幕以内，那么就绘制边界内容
+        if(-translate.x>left)
+            left = -translate.x;
 
-        float bottom = top+getHeight()-getPaddingBottom();
-        if(extendPoint.y+offsetPoint.y<windowBound.bottom)
-            bottom = windowBound.bottom;
+        if(-translate.y>top)
+            top = -translate.y;
+
+        if(extendPoint.x-translate.x<right)
+            right = extendPoint.x-translate.x;
+
+        if(extendPoint.y-translate.y<bottom)
+            bottom = extendPoint.y-translate.y;
 
         if(drawRect==null)
             initCropImageView();
         drawRect.set((int)left,(int)top,(int)right,(int)bottom);
-        L("getDrawRect",drawRect.toString());
+        L("getDrawRect","PaddingLeft:"+getPaddingLeft()+",PaddingTop:"+getPaddingTop()
+                +",PaddingRight:"+getPaddingRight()+",PaddingBottom:"+getPaddingBottom()
+                +",translate:"+translate.toString()+",drawRect:"+drawRect.toString());
         return drawRect;
     }
 
@@ -280,7 +318,7 @@ public class LCropImageView extends AppCompatImageView {
         //这里有个神坑，每次的赋值矩阵效果，都是相对于上一次叠加的，
         // 所以需要记录上一次变换后最终的比例，然后再计算相对于上次比例的相对比例
         float finalScale = (scale-lastScale)/lastScale+1;
-        matrix.postScale(finalScale,finalScale);
+        matrix.postScale(finalScale,finalScale,0,0);
 //        offsetPoint.set((int)(offsetPoint.x*finalScale),(int)(offsetPoint.y*finalScale));
         bitmapShader.setLocalMatrix(matrix);
         L("onBitmapChange","scale:"+scale+",lastScale:"+lastScale+",finalScale:"+finalScale);
@@ -308,6 +346,8 @@ public class LCropImageView extends AppCompatImageView {
             lastTouchPoint = new Point(-1,-1);
         if(drawRect==null)
             drawRect = new Rect(0,0,0,0);
+        if(translatePoint==null)
+            translatePoint = new Point();
     }
 
     @Override
@@ -379,6 +419,8 @@ public class LCropImageView extends AppCompatImageView {
                     float y2 = event.getY(1);
                     lastTouchSpace = getPointSpace(x1,y1,x2,y2);
                 }
+                if(touchSize==1)
+                    lastTouchPoint.set((int)event.getX(),(int)event.getY());
                 break;
             case MotionEvent.ACTION_POINTER_UP:
                 touchSize--;
@@ -409,16 +451,19 @@ public class LCropImageView extends AppCompatImageView {
             if(lastTouchSpace<0)
                 lastTouchSpace = space;
             float offset = space-lastTouchSpace;
-            extendPoint.x += offset;
-            extendPoint.y += offset;
+            int diagonal = getPointSpace(0,0,extendPoint.x,extendPoint.y);
+            offset = (diagonal + offset)/diagonal;
+            extendPoint.set((int)(extendPoint.x * offset),(int)(extendPoint.y * offset));
             lastTouchSpace = space;
             L("onTouchMove","x1:"+x1+",y1:"+y1+",x2:"+x2+",y2:"+y2+",space:"+space+",offset:"+offset+",extendPoint:"+extendPoint.toString());
         }else if(touchSize>0){
-            float x = event.getX();
-            float y = event.getY();
-            offsetPoint.set((int)(offsetPoint.x+(lastTouchPoint.x-x)),(int)(offsetPoint.y+(lastTouchPoint.y-y)));
-            lastTouchPoint.set((int)x,(int)y);
-            L("onTouchMove","x:"+x+",y:"+y+",lastTouchPoint:"+lastTouchPoint.toString()+",offsetPoint:"+offsetPoint.toString());
+            float touchX = event.getX();
+            float touchY = event.getY();
+            float x = offsetPoint.x+(touchX-lastTouchPoint.x);
+            float y = offsetPoint.y+(touchY-lastTouchPoint.y);
+            offsetPoint.set((int)x,(int)y);
+            L("onTouchMove","touchX:"+touchX+",touchY:"+touchY+",lastTouchPoint:"+lastTouchPoint.toString()+",offsetPoint:"+offsetPoint.toString());
+            lastTouchPoint.set((int)touchX,(int)touchY);
         }
         onBitmapChange();
     }
