@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.PixelFormat;
@@ -20,16 +19,12 @@ import android.os.Environment;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
-import android.view.Display;
-import android.view.WindowManager;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Method;
 
 public class OtherUtil {
 
@@ -153,27 +148,27 @@ public class OtherUtil {
     }
 
     public static String getSDImgPath() {
-        return Environment.getExternalStorageDirectory() + "/HuoLaiLe/img";
+        return Environment.getExternalStorageDirectory() + "/LCompass/img";
     }
 
     public static String getBGImgPath() {
-        return Environment.getExternalStorageDirectory() + "/HuoLaiLe/img/bg";
+        return Environment.getExternalStorageDirectory() + "/LCompass/img/bg";
     }
 
     public static String getSDSmallImgPath() {
-        return Environment.getExternalStorageDirectory() + "/HuoLaiLe/img/small";
+        return Environment.getExternalStorageDirectory() + "/LCompass/img/small";
     }
 
     public static String getSDVoicePath() {
-        return Environment.getExternalStorageDirectory() + "/HuoLaiLe/voice";
+        return Environment.getExternalStorageDirectory() + "/LCompass/voice";
     }
 
     public static String getSDTxtPath() {
-        return Environment.getExternalStorageDirectory() + "/HuoLaiLe/txt";
+        return Environment.getExternalStorageDirectory() + "/LCompass/txt";
     }
 
     public static String getSDAppPath(Context context) {
-        return Environment.getExternalStorageDirectory() + "/HuoLaiLe/app";
+        return Environment.getExternalStorageDirectory() + "/LCompass/app";
     }
 
     /**
@@ -198,7 +193,8 @@ public class OtherUtil {
     }
 
     public static String getContextImagePath(Context context){
-        return context.getFilesDir().getAbsolutePath() + "/bg";
+//        return context.getFilesDir().getAbsolutePath() + "/bg";
+        return getBGImgPath();
     }
 
     /**
@@ -229,6 +225,16 @@ public class OtherUtil {
 
     public static String getPointerBackground(Context context) {
         return new File(getContextImagePath(context),"PointerBackground.png").getAbsolutePath();
+    }
+
+    public static String getTempImgPath(Context context){
+        return getTempImgFile(context).getAbsolutePath();
+    }
+    public static File getTempImgFile(Context context){
+        File file = new File(getSDImgPath());
+        if(!file.exists())
+            file.mkdirs();
+        return new File(file,"temp.png");
     }
 
     /**

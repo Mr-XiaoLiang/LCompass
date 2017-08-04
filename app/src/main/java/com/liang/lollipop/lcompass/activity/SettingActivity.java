@@ -1,12 +1,14 @@
 package com.liang.lollipop.lcompass.activity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -16,6 +18,9 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.liang.lollipop.lcompass.R;
 import com.liang.lollipop.lcompass.drawable.CircleBgDrawable;
 import com.liang.lollipop.lcompass.drawable.DialDrawable;
@@ -23,8 +28,8 @@ import com.liang.lollipop.lcompass.drawable.PointerDrawable;
 import com.liang.lollipop.lcompass.util.OtherUtil;
 import com.liang.lollipop.lcompass.util.SharedPreferencesUtils;
 import com.liang.lollipop.lcrop.LCropUtil;
-import com.liang.lollipop.lcrop.activity.CropActivity;
 import com.liang.lollipop.lcrop.activity.SelectImagesActivity;
+import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -48,7 +53,7 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
     /*-------------------------------常量部分-结束-------------------------------*/
 
     private View settingSheet;
-    private View rootBgView;
+    private ImageView rootBgView;
 
     /*-------------------------------颜色调整部分-开始-------------------------------*/
     private int dialBgColor = 0;
@@ -116,6 +121,8 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
     private ImageView pointerBgShowView;
     /*-------------------------------图片调整部分-结束-------------------------------*/
 
+    private SwitchCompat showSettingBtnSwitch;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -173,13 +180,21 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
         onPointerBgColorChange(pointerBgColor);
         onPointerColorChange(pointerColor);
         onRootBgColorChange(rootBgColor);
+
+        rootBgSwitch.setChecked(SharedPreferencesUtils.isShowRootBgImg(this));
+        dialBgSwitch.setChecked(SharedPreferencesUtils.isShowDialBgImg(this));
+        pointerBgSwitch.setChecked(SharedPreferencesUtils.isShowPointerBgImg(this));
+        showSettingBtnSwitch.setChecked(SharedPreferencesUtils.isShowSettingBtn(this));
+        onRootBackgroundImgChange();
+        onDialBackgroundImgChange();
+        onPointerBackgroundImgChange();
     }
 
     private void initView(){
         Toolbar toolbar = (Toolbar) findViewById(R.id.activity_setting_toolbar);
         setSupportActionBar(toolbar);
 
-        rootBgView = findViewById(R.id.setting_background_body);
+        rootBgView = (ImageView) findViewById(R.id.setting_background_body);
 
         settingSheet = findViewById(R.id.sheet_setting_root);
         BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(settingSheet);
@@ -309,6 +324,10 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
         dialBgSwitch = (SwitchCompat) findViewById(R.id.image_background_dial_switch);
         pointerBgSwitch = (SwitchCompat) findViewById(R.id.image_background_pointer_switch);
 
+        rootBgSwitch.setOnCheckedChangeListener(this);
+        dialBgSwitch.setOnCheckedChangeListener(this);
+        pointerBgSwitch.setOnCheckedChangeListener(this);
+
         rootBgShowView = (ImageView) findViewById(R.id.image_background_root_show);
         dialBgShowView = (ImageView) findViewById(R.id.image_background_dial_show);
         pointerBgShowView = (ImageView) findViewById(R.id.image_background_pointer_show);
@@ -318,6 +337,11 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
         findViewById(R.id.image_background_pointer).setOnClickListener(this);
 
         //图片设置部分View的初始化结束------------------------
+        if(Build.VERSION.SDK_INT<Build.VERSION_CODES.N_MR1){
+            findViewById(R.id.show_setting_btn_body).setVisibility(View.GONE);
+        }
+        showSettingBtnSwitch = (SwitchCompat) findViewById(R.id.show_setting_btn_switch);
+        showSettingBtnSwitch.setOnCheckedChangeListener(this);
     }
 
     @Override
@@ -343,40 +367,96 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        onPhotoResult(requestCode,resultCode,data);
+        if(onPhotoResult(requestCode,resultCode,data))
+            return;
+//        if(onPhotoCropResult(requestCode,resultCode,data))
+//            return;
+        onPhotoCropResult(requestCode,resultCode,data);
+
     }
 
-    private void onPhotoResult(int requestCode,int resultCode,Intent data){
+    private boolean onPhotoResult(int requestCode,int resultCode,Intent data){
         if(resultCode!=SelectImagesActivity.RESULT_OK)
-            return;
+            return false;
         ArrayList<String> imgList = data.getStringArrayListExtra(SelectImagesActivity.RESULT_DATA);
         if(imgList==null||imgList.size()<1){
             S("选择的图片为空");
-            return;
-
+            return false;
         }
         String path = imgList.get(0);
         if(TextUtils.isEmpty(path) || !new File(path).exists()){
             S("您选择的图片地址是空的");
-            return;
+            return false;
         }
         switch (requestCode){
             case REQUEST_ROOT_BG:
-                LCropUtil.cropPhoto(this,REQUEST_CROP_ROOT_BG, path,9,16,false);
-                break;
+//                LCropUtil.cropPhoto(this,REQUEST_CROP_ROOT_BG, path,9,16,OtherUtil.getBackground(this));
+                UCrop.of(Uri.fromFile(new File(path)),Uri.fromFile(OtherUtil.getTempImgFile(this)))
+                        .withOptions(getUCropOption("剪裁背景图片",false))
+                        .withAspectRatio(9,16)
+                        .withMaxResultSize(1080,1920)
+                        .start(this,REQUEST_CROP_ROOT_BG);
+                return true;
             case REQUEST_DIAL_BG:
-                LCropUtil.cropPhoto(this,REQUEST_CROP_DIAL_BG, path,1,1,false);
-                break;
+//                LCropUtil.cropPhoto(this,REQUEST_CROP_DIAL_BG, path,1,1,OtherUtil.getBackground(this));
+                UCrop.of(Uri.fromFile(new File(path)),Uri.fromFile(OtherUtil.getTempImgFile(this)))
+                        .withAspectRatio(1,1)
+                        .withOptions(getUCropOption("剪裁表盘图片",true))
+                        .withMaxResultSize(512,512)
+                        .start(this,REQUEST_CROP_DIAL_BG);
+                return true;
             case REQUEST_POINTER_BG:
-                LCropUtil.cropPhoto(this,REQUEST_CROP_POINTER_BG, path,1,1,false);
-                break;
+//                LCropUtil.cropPhoto(this,REQUEST_CROP_POINTER_BG, path,1,1,OtherUtil.getBackground(this));
+                UCrop.of(Uri.fromFile(new File(path)),Uri.fromFile(OtherUtil.getTempImgFile(this)))
+                        .withAspectRatio(1,1)
+                        .withOptions(getUCropOption("剪裁指针图片",true))
+                        .withMaxResultSize(512,512)
+                        .start(this,REQUEST_CROP_POINTER_BG);
+                return true;
         }
+        return false;
     }
 
-    private void onPhotoCropResult(int requestCode,int resultCode,Intent data){
-        if(resultCode!=RESULT_OK)
-            return;
-        //TODO
+    private UCrop.Options getUCropOption(String title,boolean isCircle){
+        UCrop.Options options = new UCrop.Options();
+        options.setToolbarColor(ContextCompat.getColor(this,R.color.colorPrimary));
+        options.setToolbarTitle(title);
+        options.setStatusBarColor(ContextCompat.getColor(this,R.color.colorPrimary));
+        options.setCircleDimmedLayer(isCircle);
+        options.setActiveWidgetColor(ContextCompat.getColor(this,R.color.colorPrimary));
+        return options;
+    }
+
+    private boolean onPhotoCropResult(int requestCode,int resultCode,Intent data){
+        if(UCrop.RESULT_ERROR==resultCode){
+            final Throwable cropError = UCrop.getError(data);
+            S("图片剪裁出错了："+cropError.toString());
+            return false;
+        }
+//        if(UCrop.REQUEST_CROP!=resultCode)
+//            return false;
+//        Uri resultUri = UCrop.getOutput(data);
+        switch (requestCode){
+            case REQUEST_CROP_ROOT_BG:
+                if(OtherUtil.saveBackground(this,OtherUtil.getTempImgPath(this)))
+                    onRootBackgroundImgChange();
+                else
+                    S("保存失败");
+                return true;
+            case REQUEST_CROP_DIAL_BG:
+                if(OtherUtil.saveDialBackground(this,OtherUtil.getTempImgPath(this)))
+                    onDialBackgroundImgChange();
+                else
+                    S("保存失败");
+                return true;
+            case REQUEST_CROP_POINTER_BG:
+                if(OtherUtil.savePointerBackground(this,OtherUtil.getTempImgPath(this)))
+                    onPointerBackgroundImgChange();
+                else
+                    S("保存失败");
+                return true;
+        }
+        return false;
     }
 
     @Override
@@ -547,26 +627,51 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
         switch (buttonView.getId()){
             case R.id.image_background_root_switch:
                 SharedPreferencesUtils.setShowRootBgImg(this,isChecked);
+                onRootBackgroundImgChange();
                 break;
             case R.id.image_background_dial_switch:
                 SharedPreferencesUtils.setShowDialBgImg(this,isChecked);
+                onDialBackgroundImgChange();
                 break;
             case R.id.image_background_pointer_switch:
                 SharedPreferencesUtils.setShowPointerBgImg(this,isChecked);
+                onPointerBackgroundImgChange();
+                break;
+            case R.id.show_setting_btn_switch:
+                SharedPreferencesUtils.setShowSettingBtn(this,isChecked);
                 break;
         }
     }
 
     private void onRootBackgroundImgChange(){
-        //TODO
+        glide.load(OtherUtil.getBackground(this)).skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(rootBgShowView);
+        if(SharedPreferencesUtils.isShowRootBgImg(this)){
+            glide.load(OtherUtil.getBackground(this)).skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(rootBgView);
+        }else{
+            rootBgView.setImageDrawable(null);
+        }
     }
 
     private void onDialBackgroundImgChange(){
-        //TODO
+        glide.load(OtherUtil.getDialBackground(this)).skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(dialBgShowView);
+        dialDrawable.setShowBitmap(SharedPreferencesUtils.isShowDialBgImg(this));
+        glide.load(OtherUtil.getDialBackground(this)).asBitmap().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(new SimpleTarget<Bitmap>() {
+            @Override
+            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                dialDrawable.setBitmap(resource);
+            }
+        });
     }
 
     private void onPointerBackgroundImgChange(){
-        //TODO
+        glide.load(OtherUtil.getPointerBackground(this)).skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(pointerBgShowView);
+        pointerDrawable.setShowBitmap(SharedPreferencesUtils.isShowPointerBgImg(this));
+        glide.load(OtherUtil.getPointerBackground(this)).asBitmap().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(new SimpleTarget<Bitmap>() {
+            @Override
+            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                pointerDrawable.setBitmap(resource);
+            }
+        });
     }
 
 }

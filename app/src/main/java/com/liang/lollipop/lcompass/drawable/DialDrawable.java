@@ -25,6 +25,7 @@ public class DialDrawable extends Drawable {
     private Paint bgPaint;
     private Paint scalePaint;
     private Paint textPaint;
+    private boolean isShowBitmap = false;
 
     private Rect bounds;
 
@@ -133,15 +134,28 @@ public class DialDrawable extends Drawable {
         invalidateSelf();
     }
 
-    private void setBitmap(Bitmap bitmap){
-        if(bitmap==null)
+    public void setBitmap(Bitmap bitmap){
+        if(bitmap==null){
+            bitmapShader = null;
+            bgPaint.setShader(null);
             return;
+        }
         bitmapShader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
-        bgPaint.setShader(bitmapShader);
+        if(isShowBitmap)
+            bgPaint.setShader(bitmapShader);
         if(bitmapSize==null)
             bitmapSize = new Point();
         bitmapSize.set(bitmap.getWidth(),bitmap.getHeight());
         matrixBitmap();
+        invalidateSelf();
+    }
+
+    public void setShowBitmap(boolean showBitmap) {
+        if(isShowBitmap == showBitmap)
+            return;
+        isShowBitmap = showBitmap;
+        bgPaint.setShader(isShowBitmap?bitmapShader:null);
+        invalidateSelf();
     }
 
     /**

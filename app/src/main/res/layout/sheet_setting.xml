@@ -3,17 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="300dp"
+    android:layout_height="400dp"
     android:orientation="vertical"
     app:layout_behavior="@string/BottomSheetBehavior"
     tools:context="com.liang.lollipop.lcompass.activity.SettingActivity"
     android:id="@+id/sheet_setting_root"
     app:behavior_hideable="false"
-    app:behavior_peekHeight="20dp"
-    android:background="#8000">
+    app:behavior_peekHeight="40dp">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="20dp"
+        android:layout_height="40dp"
         android:gravity="center"
         android:orientation="horizontal">
         <ImageView
@@ -506,7 +505,7 @@
                         android:layout_height="wrap_content"
                         android:textColor="#DDDDDD"
                         android:textSize="12sp"
-                        android:text="您选择的图片将被保存到app内部，您可以通过清除用户数据的形式清理，不过建议通过开关来切换图片显示，通过重新选择来变换图片。"/>
+                        android:text="@string/instruction_selection_picture"/>
                 </LinearLayout>
             </LinearLayout>
             <View
@@ -562,7 +561,7 @@
                         android:layout_height="wrap_content"
                         android:textColor="#DDDDDD"
                         android:textSize="12sp"
-                        android:text="您选择的图片将被保存到app内部，您可以通过清除用户数据的形式清理，不过建议通过开关来切换图片显示，通过重新选择来变换图片。"/>
+                        android:text="@string/instruction_selection_picture"/>
                 </LinearLayout>
             </LinearLayout>
             <View
@@ -618,8 +617,46 @@
                         android:layout_height="wrap_content"
                         android:textColor="#DDDDDD"
                         android:textSize="12sp"
-                        android:text="您选择的图片将被保存到app内部，您可以通过清除用户数据的形式清理，不过建议通过开关来切换图片显示，通过重新选择来变换图片。"/>
+                        android:text="@string/instruction_selection_picture"/>
                 </LinearLayout>
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@android:color/white"/>
+            <LinearLayout
+                android:id="@+id/show_setting_btn_body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="0px">
+                <LinearLayout
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="主界面显示设置按钮"
+                        android:gravity="center_vertical"
+                        android:textSize="16sp"
+                        android:textColor="@android:color/white"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#DDDDDD"
+                        android:textSize="12sp"
+                        android:text="如果您的启动器支持Shortcuts,那么建议关闭此选项，获得更加完整的的体验。如果不支持，那么请不要关闭，否则您将无法再次进入此页面。但是您可以选择清除软件数据，来使偏好设置恢复。"/>
+                </LinearLayout>
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/show_setting_btn_switch"
+                    android:checked="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
             </LinearLayout>
             <Space
                 android:layout_width="match_parent"

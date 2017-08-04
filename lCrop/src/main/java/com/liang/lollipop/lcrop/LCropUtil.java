@@ -2,10 +2,14 @@ package com.liang.lollipop.lcrop;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
+import android.provider.MediaStore;
+import android.text.TextUtils;
 
-import com.liang.lollipop.lcrop.activity.CropActivity;
 import com.liang.lollipop.lcrop.activity.SelectImagesActivity;
 
 /**
@@ -104,52 +108,69 @@ public class LCropUtil {
         selectPhotos(fragment,requestCode,null,1);
     }
 
-    public static void cropPhoto(Activity activity,int requestCode,String uri,int aspectX,int aspectY,int outputX,int outputY,boolean returnData){
-        activity.startActivityForResult(createCropIntent(uri,aspectX,aspectY,outputX,outputY,returnData), requestCode);
+    public static void cropPhoto(Activity activity,int requestCode,String uri,int aspectX,int aspectY,int outputX,int outputY,String outputUri){
+        activity.startActivityForResult(createCropIntent(activity,uri,aspectX,aspectY,outputX,outputY,outputUri), requestCode);
     }
 
-    public static void cropPhoto(Activity activity,int requestCode,String uri,int aspectX,int aspectY,boolean returnData){
-//        activity.startActivityForResult(createCropIntent(uri,aspectX,aspectY,returnData), requestCode);
-        Intent intent = new Intent(activity, CropActivity.class);
-        intent.putExtra(CropActivity.ARG_IMAGE_URL,uri);
-        activity.startActivity(intent);
+    public static void cropPhoto(Activity activity,int requestCode,String uri,int aspectX,int aspectY,String outputUri){
+        activity.startActivityForResult(createCropIntent(activity,uri,aspectX,aspectY,outputUri), requestCode);
+//        Intent intent = new Intent(activity, CropActivity.class);
+//        intent.putExtra(CropActivity.ARG_IMAGE_URL,uri);
+//        activity.startActivity(intent);
     }
 
-    public static void cropPhoto(Fragment fragment,int requestCode,String uri,int aspectX,int aspectY,int outputX,int outputY,boolean returnData){
-        fragment.startActivityForResult(createCropIntent(uri,aspectX,aspectY,outputX,outputY,returnData), requestCode);
+    public static void cropPhoto(Fragment fragment,int requestCode,String uri,int aspectX,int aspectY,int outputX,int outputY,String outputUri){
+        fragment.startActivityForResult(createCropIntent(fragment.getActivity(),uri,aspectX,aspectY,outputX,outputY,outputUri), requestCode);
     }
 
-    public static void cropPhoto(Fragment fragment,int requestCode,String uri,int aspectX,int aspectY,boolean returnData){
-        fragment.startActivityForResult(createCropIntent(uri,aspectX,aspectY,returnData), requestCode);
+    public static void cropPhoto(Fragment fragment,int requestCode,String uri,int aspectX,int aspectY,String outputUri){
+        fragment.startActivityForResult(createCropIntent(fragment.getActivity(),uri,aspectX,aspectY,outputUri), requestCode);
     }
 
-    public static void cropPhoto(android.support.v4.app.Fragment fragment, int requestCode, String uri, int aspectX, int aspectY, int outputX, int outputY, boolean returnData){
-        fragment.startActivityForResult(createCropIntent(uri,aspectX,aspectY,outputX,outputY,returnData), requestCode);
+    public static void cropPhoto(android.support.v4.app.Fragment fragment, int requestCode, String uri, int aspectX, int aspectY, int outputX, int outputY, String outputUri){
+        fragment.startActivityForResult(createCropIntent(fragment.getContext(),uri,aspectX,aspectY,outputX,outputY,outputUri), requestCode);
     }
 
-    public static void cropPhoto(android.support.v4.app.Fragment fragment,int requestCode,String uri,int aspectX,int aspectY,boolean returnData){
-        fragment.startActivityForResult(createCropIntent(uri,aspectX,aspectY,returnData), requestCode);
+    public static void cropPhoto(android.support.v4.app.Fragment fragment,int requestCode,String uri,int aspectX,int aspectY,String outputUri){
+        fragment.startActivityForResult(createCropIntent(fragment.getContext(),uri,aspectX,aspectY,outputUri), requestCode);
     }
 
-    private static Intent createCropIntent(String uri,int aspectX,int aspectY,int outputX,int outputY,boolean returnData){
-        Intent intent = createCropIntent(uri,aspectX,aspectY,returnData);
+    private static Intent createCropIntent(Context context,String uri,int aspectX,int aspectY,int outputX,int outputY,String outputUri){
+        Intent intent = createCropIntent(context,uri,aspectX,aspectY,outputUri);
         // outputX outputY 是裁剪图片宽高
         intent.putExtra("outputX", outputX);
         intent.putExtra("outputY", outputY);
         return intent;
     }
 
-    private static Intent createCropIntent(String uri,int aspectX,int aspectY,boolean returnData){
+    private static Intent createCropIntent(Context context,String path, int aspectX, int aspectY, String outputUri){
         Intent intent = new Intent("com.android.camera.action.CROP");
-        intent.setDataAndType(Uri.parse(uri), "image/*");
+
+        intent.setDataAndType(getUri(context,path), "image/*");
         // 设置裁剪
         intent.putExtra("crop", "true");
         // aspectX aspectY 是宽高的比例
         intent.putExtra("aspectX", aspectX);
         intent.putExtra("aspectY", aspectY);
         // outputX outputY 是裁剪图片宽高
-        intent.putExtra("return-data", returnData);
+        intent.putExtra("return-data", TextUtils.isEmpty(outputUri));
+
+        if(!TextUtils.isEmpty(outputUri)){
+            intent.putExtra(MediaStore.EXTRA_OUTPUT,getUri(context,outputUri));
+        }
         return intent;
+    }
+
+    public static Uri getUri(Context context,String path){
+        if(Build.VERSION.SDK_INT>=24){
+            //安卓N以后，文件管理高度私有化，
+            // 如果跨应用传递地址，需要使用ContentProvider或FileProvider
+            ContentValues contentValues = new ContentValues(1);
+            contentValues.put(MediaStore.Images.Media.DATA, path);
+            return context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,contentValues);
+        }else{
+            return Uri.parse(path);
+        }
     }
 
 }

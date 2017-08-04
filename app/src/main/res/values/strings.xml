@@ -1,8 +1,9 @@
 <resources>
-    <string name="app_name">指南针</string>
+    <string name="app_name">LCompass</string>
     <string name="api_info">旧版API：从Android2.2就被弃用，通过软件算法实现。\n新版API：通过“磁场感应器和加速度感应器”共同获得（不信拿个磁铁靠近手机试试）。\n两者可能存在误差，也都各自存在缺陷，建议互相印证。</string>
     <string name="type_info">表盘模式：这是常规的指南针app模式，此模式中，表盘始终是正确方向，指针为手机方向。\n指针模式：此模式为模拟真实指南针，表盘为手机方向，指针始终指向正确方向</string>
-    <string name="title_activity_setting">设置</string>
-    <string name="title_activity_about">关于</string>
+    <string name="title_activity_setting">Setting</string>
+    <string name="title_activity_about">About Us</string>
     <string name="BottomSheetBehavior">android.support.design.widget.BottomSheetBehavior</string>
+    <string name="instruction_selection_picture">您选择的图片将被保存到app内部，您可以通过清除用户数据的形式清理，不过建议通过开关来切换图片显示，通过重新选择来变换图片。</string>
 </resources>

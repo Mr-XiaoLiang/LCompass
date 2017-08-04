@@ -236,6 +236,8 @@ public class SharedPreferencesUtils {
     public static final String POINTER_BG_IMG_IS_SHOW  = "POINTER_BG_IMG_IS_SHOW";
     public static final String DIAL_BG_IMG_IS_SHOW  = "DIAL_BG_IMG_IS_SHOW";
 
+    public static final String SETTING_SHOW_SET  = "SETTING_SHOW_SET";
+
     public static boolean isRotatingForeground(Context context){
         return get(context,ROTATING_FOREGROUND,true);
     }
@@ -322,6 +324,14 @@ public class SharedPreferencesUtils {
 
     public static void setShowPointerBgImg(Context context,boolean b){
         put(context,POINTER_BG_IMG_IS_SHOW,b);
+    }
+
+    public static boolean isShowSettingBtn(Context context){
+        return get(context,SETTING_SHOW_SET, true);
+    }
+
+    public static void setShowSettingBtn(Context context,boolean b){
+        put(context,SETTING_SHOW_SET,b);
     }
 
 }

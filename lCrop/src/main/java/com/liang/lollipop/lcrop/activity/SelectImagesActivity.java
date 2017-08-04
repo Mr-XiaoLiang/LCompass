@@ -74,7 +74,7 @@ public class SelectImagesActivity extends BaseActivity implements SelectImagesFr
      * 图片选择的正确状态，
      * 值与Activity的默认值相同
      */
-    public static final int RESULT_OK = -1;
+    public static final int RESULT_OK = 89;
 
     private int selectedSize = 0;
     private int maxSize = 0;

@@ -11,5 +11,5 @@
     <string name="error_image_not_exist">Image error</string>
     <string name="error_image_size_too_little">Please select enough photos</string>
     <string name="error_image_size_too_much">You choose picture too much</string>
-    <string name="title_activity_crop">剪裁图片</string>
+    <string name="title_activity_crop">Crop Photo</string>
 </resources>

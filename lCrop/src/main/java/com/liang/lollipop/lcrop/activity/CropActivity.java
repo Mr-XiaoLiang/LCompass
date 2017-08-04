@@ -1,13 +1,10 @@
 package com.liang.lollipop.lcrop.activity;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.liang.lollipop.lcrop.R;
 import com.liang.lollipop.lcrop.view.LCropImageView;
 
@@ -50,7 +47,7 @@ public class CropActivity extends BaseActivity {
 //                        cropImageView.setImageBitmap(resource);
 //                    }
 //                });//.into(cropImageView);
-                glide.asBitmap().load(path).into(cropImageView);
+                glide.load(path).asBitmap().into(cropImageView);
             }
         }catch (Exception e){
             S("无效的图片地址，Exception："+e.toString());

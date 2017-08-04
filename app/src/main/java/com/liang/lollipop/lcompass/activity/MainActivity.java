@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -26,6 +27,9 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.liang.lollipop.lcompass.R;
 import com.liang.lollipop.lcompass.drawable.CircleBgDrawable;
 import com.liang.lollipop.lcompass.drawable.DialDrawable;
@@ -45,7 +49,7 @@ public class MainActivity extends BaseActivity implements SensorEventListener, L
     private static final int REQUEST_SENSOR = 24;
 
     //背景
-    private View rootBgView;
+    private ImageView rootBgView;
     //背景View
     private ImageView backgroundView;
     //背景渲染Drawable
@@ -119,8 +123,7 @@ public class MainActivity extends BaseActivity implements SensorEventListener, L
     }
 
     private void initView() {
-
-        rootBgView = findViewById(R.id.background_body);
+        rootBgView = (ImageView) findViewById(R.id.background_body);
         backgroundView = (ImageView) findViewById(R.id.background_img);
         foregroundView = (ImageView) findViewById(R.id.foreground_img);
         angleView = (TextView) findViewById(R.id.angle_text);
@@ -138,13 +141,6 @@ public class MainActivity extends BaseActivity implements SensorEventListener, L
 
         backgroundView.setImageDrawable(backgroundDrawable = new DialDrawable());
         foregroundView.setImageDrawable(foregroundDrawable = new PointerDrawable());
-        initDial();
-
-        if(Build.VERSION.SDK_INT<Build.VERSION_CODES.N_MR1){
-            View setting = findViewById(R.id.setting_img);
-            setting.setVisibility(View.VISIBLE);
-            setting.setOnClickListener(this);
-        }
     }
 
     private void initDial(){
@@ -154,6 +150,25 @@ public class MainActivity extends BaseActivity implements SensorEventListener, L
         foregroundDrawable.setBgColor(SharedPreferencesUtils.pointerBgColor(this));
         foregroundDrawable.setColor(SharedPreferencesUtils.pointerColor(this));
         rootBgView.setBackgroundColor(SharedPreferencesUtils.rootBgColor(this));
+        if(SharedPreferencesUtils.isShowRootBgImg(this)){
+            glide.load(OtherUtil.getBackground(this)).skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(rootBgView);
+        }else{
+            rootBgView.setImageDrawable(null);
+        }
+        backgroundDrawable.setShowBitmap(SharedPreferencesUtils.isShowDialBgImg(this));
+        glide.load(OtherUtil.getDialBackground(this)).asBitmap().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(new SimpleTarget<Bitmap>() {
+            @Override
+            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                backgroundDrawable.setBitmap(resource);
+            }
+        });
+        foregroundDrawable.setShowBitmap(SharedPreferencesUtils.isShowPointerBgImg(this));
+        glide.load(OtherUtil.getPointerBackground(this)).asBitmap().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(new SimpleTarget<Bitmap>() {
+            @Override
+            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                foregroundDrawable.setBitmap(resource);
+            }
+        });
     }
 
     private void initSensor() {
@@ -203,6 +218,11 @@ public class MainActivity extends BaseActivity implements SensorEventListener, L
     @Override
     protected void onStart() {
         super.onStart();
+        if(Build.VERSION.SDK_INT<Build.VERSION_CODES.N_MR1||SharedPreferencesUtils.isShowSettingBtn(this)){
+            View setting = findViewById(R.id.setting_img);
+            setting.setVisibility(View.VISIBLE);
+            setting.setOnClickListener(this);
+        }
         registerSensorService();
         initLocation();
     }
