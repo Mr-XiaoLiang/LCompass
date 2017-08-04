@@ -362,13 +362,13 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
         }
         switch (requestCode){
             case REQUEST_ROOT_BG:
-                LCropUtil.cropPhoto(this,REQUEST_CROP_ROOT_BG, Uri.parse(path),9,16,false);
+                LCropUtil.cropPhoto(this,REQUEST_CROP_ROOT_BG, path,9,16,false);
                 break;
             case REQUEST_DIAL_BG:
-                LCropUtil.cropPhoto(this,REQUEST_CROP_DIAL_BG, Uri.parse(path),1,1,false);
+                LCropUtil.cropPhoto(this,REQUEST_CROP_DIAL_BG, path,1,1,false);
                 break;
             case REQUEST_POINTER_BG:
-                LCropUtil.cropPhoto(this,REQUEST_CROP_POINTER_BG, Uri.parse(path),1,1,false);
+                LCropUtil.cropPhoto(this,REQUEST_CROP_POINTER_BG, path,1,1,false);
                 break;
         }
     }

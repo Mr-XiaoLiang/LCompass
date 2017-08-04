@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 
+import com.liang.lollipop.lcrop.activity.CropActivity;
 import com.liang.lollipop.lcrop.activity.SelectImagesActivity;
 
 /**
@@ -103,31 +104,34 @@ public class LCropUtil {
         selectPhotos(fragment,requestCode,null,1);
     }
 
-    public static void cropPhoto(Activity activity,int requestCode,Uri uri,int aspectX,int aspectY,int outputX,int outputY,boolean returnData){
+    public static void cropPhoto(Activity activity,int requestCode,String uri,int aspectX,int aspectY,int outputX,int outputY,boolean returnData){
         activity.startActivityForResult(createCropIntent(uri,aspectX,aspectY,outputX,outputY,returnData), requestCode);
     }
 
-    public static void cropPhoto(Activity activity,int requestCode,Uri uri,int aspectX,int aspectY,boolean returnData){
-        activity.startActivityForResult(createCropIntent(uri,aspectX,aspectY,returnData), requestCode);
+    public static void cropPhoto(Activity activity,int requestCode,String uri,int aspectX,int aspectY,boolean returnData){
+//        activity.startActivityForResult(createCropIntent(uri,aspectX,aspectY,returnData), requestCode);
+        Intent intent = new Intent(activity, CropActivity.class);
+        intent.putExtra(CropActivity.ARG_IMAGE_URL,uri);
+        activity.startActivity(intent);
     }
 
-    public static void cropPhoto(Fragment fragment,int requestCode,Uri uri,int aspectX,int aspectY,int outputX,int outputY,boolean returnData){
+    public static void cropPhoto(Fragment fragment,int requestCode,String uri,int aspectX,int aspectY,int outputX,int outputY,boolean returnData){
         fragment.startActivityForResult(createCropIntent(uri,aspectX,aspectY,outputX,outputY,returnData), requestCode);
     }
 
-    public static void cropPhoto(Fragment fragment,int requestCode,Uri uri,int aspectX,int aspectY,boolean returnData){
+    public static void cropPhoto(Fragment fragment,int requestCode,String uri,int aspectX,int aspectY,boolean returnData){
         fragment.startActivityForResult(createCropIntent(uri,aspectX,aspectY,returnData), requestCode);
     }
 
-    public static void cropPhoto(android.support.v4.app.Fragment fragment, int requestCode, Uri uri, int aspectX, int aspectY, int outputX, int outputY, boolean returnData){
+    public static void cropPhoto(android.support.v4.app.Fragment fragment, int requestCode, String uri, int aspectX, int aspectY, int outputX, int outputY, boolean returnData){
         fragment.startActivityForResult(createCropIntent(uri,aspectX,aspectY,outputX,outputY,returnData), requestCode);
     }
 
-    public static void cropPhoto(android.support.v4.app.Fragment fragment,int requestCode,Uri uri,int aspectX,int aspectY,boolean returnData){
+    public static void cropPhoto(android.support.v4.app.Fragment fragment,int requestCode,String uri,int aspectX,int aspectY,boolean returnData){
         fragment.startActivityForResult(createCropIntent(uri,aspectX,aspectY,returnData), requestCode);
     }
 
-    private static Intent createCropIntent(Uri uri,int aspectX,int aspectY,int outputX,int outputY,boolean returnData){
+    private static Intent createCropIntent(String uri,int aspectX,int aspectY,int outputX,int outputY,boolean returnData){
         Intent intent = createCropIntent(uri,aspectX,aspectY,returnData);
         // outputX outputY 是裁剪图片宽高
         intent.putExtra("outputX", outputX);
@@ -135,9 +139,9 @@ public class LCropUtil {
         return intent;
     }
 
-    private static Intent createCropIntent(Uri uri,int aspectX,int aspectY,boolean returnData){
+    private static Intent createCropIntent(String uri,int aspectX,int aspectY,boolean returnData){
         Intent intent = new Intent("com.android.camera.action.CROP");
-        intent.setDataAndType(uri, "image/*");
+        intent.setDataAndType(Uri.parse(uri), "image/*");
         // 设置裁剪
         intent.putExtra("crop", "true");
         // aspectX aspectY 是宽高的比例
