@@ -3,6 +3,7 @@ package com.liang.lollipop.lcompass.activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
@@ -39,6 +40,10 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
     private static final int REQUEST_ROOT_BG = 456;
     private static final int REQUEST_DIAL_BG = 457;
     private static final int REQUEST_POINTER_BG = 458;
+
+    private static final int REQUEST_CROP_ROOT_BG = 466;
+    private static final int REQUEST_CROP_DIAL_BG = 467;
+    private static final int REQUEST_CROP_POINTER_BG = 468;
 
     /*-------------------------------常量部分-结束-------------------------------*/
 
@@ -357,21 +362,21 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
         }
         switch (requestCode){
             case REQUEST_ROOT_BG:
-                OtherUtil.saveBackground(this,path);
-                glide.load(path).into(rootBgShowView);
-                Intent intent = new Intent(this, CropActivity.class);
-                intent.putExtra(CropActivity.ARG_IMAGE_URL,path);
-                startActivityForResult(intent,0);
+                LCropUtil.cropPhoto(this,REQUEST_CROP_ROOT_BG, Uri.parse(path),9,16,false);
                 break;
             case REQUEST_DIAL_BG:
-                OtherUtil.saveDialBackground(this,path);
-                glide.load(path).into(dialBgShowView);
+                LCropUtil.cropPhoto(this,REQUEST_CROP_DIAL_BG, Uri.parse(path),1,1,false);
                 break;
             case REQUEST_POINTER_BG:
-                OtherUtil.savePointerBackground(this,path);
-                glide.load(path).into(pointerBgShowView);
+                LCropUtil.cropPhoto(this,REQUEST_CROP_POINTER_BG, Uri.parse(path),1,1,false);
                 break;
         }
+    }
+
+    private void onPhotoCropResult(int requestCode,int resultCode,Intent data){
+        if(resultCode!=RESULT_OK)
+            return;
+        //TODO
     }
 
     @Override
