@@ -36,6 +36,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageHolder> {
             @Override
             public void getViewSize(float width, float height,int copies) {
                 ImageAdapter.this.itemHeight = (int) (width/copies);
+                notifyDataSetChanged();
             }
         });
     }
