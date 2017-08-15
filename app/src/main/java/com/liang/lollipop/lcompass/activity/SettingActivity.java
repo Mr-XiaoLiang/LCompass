@@ -26,6 +26,7 @@ import com.liang.lollipop.lcompass.drawable.CircleBgDrawable;
 import com.liang.lollipop.lcompass.drawable.DialDrawable;
 import com.liang.lollipop.lcompass.drawable.PointerDrawable;
 import com.liang.lollipop.lcompass.util.OtherUtil;
+import com.liang.lollipop.lcompass.util.Settings;
 import com.liang.lollipop.lcompass.util.SharedPreferencesUtils;
 import com.liang.lollipop.lcrop.LCropUtil;
 import com.liang.lollipop.lcrop.activity.SelectImagesActivity;
@@ -54,6 +55,7 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
 
     private View settingSheet;
     private ImageView rootBgView;
+    private TextView locationText;
 
     /*-------------------------------颜色调整部分-开始-------------------------------*/
     private int dialBgColor = 0;
@@ -62,6 +64,7 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
     private int pointerBgColor = 0;
     private int pointerColor = 0;
     private int rootBgColor = 0;
+    private int locationTextColor = 0;
 
     private CircleBgDrawable dialBgColorDrawable;
     private CircleBgDrawable dialScaleColorDrawable;
@@ -69,6 +72,7 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
     private CircleBgDrawable pointerBgColorDrawable;
     private CircleBgDrawable pointerColorDrawable;
     private CircleBgDrawable rootBgColorDrawable;
+    private CircleBgDrawable locationTextColorDrawable;
 
     private TextView dialBgColorText;
     private TextView dialScaleColorText;
@@ -76,6 +80,7 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
     private TextView pointerBgColorText;
     private TextView pointerColorText;
     private TextView rootBgColorText;
+    private TextView locationTextColorText;
 
     private SeekBar dialBgColorAlphaBar;
     private SeekBar dialBgColorRedBar;
@@ -106,6 +111,11 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
     private SeekBar rootBgColorRedBar;
     private SeekBar rootBgColorGreenBar;
     private SeekBar rootBgColorBlueBar;
+
+    private SeekBar locationTextColorAlphaBar;
+    private SeekBar locationTextColorRedBar;
+    private SeekBar locationTextColorGreenBar;
+    private SeekBar locationTextColorBlueBar;
     /*-------------------------------颜色调整部分-结束-------------------------------*/
 
     private PointerDrawable pointerDrawable;
@@ -122,6 +132,7 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
     /*-------------------------------图片调整部分-结束-------------------------------*/
 
     private SwitchCompat showSettingBtnSwitch;
+    private SwitchCompat stableModeSwitch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,12 +148,13 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
     }
 
     private void initData(){
-        dialBgColor = SharedPreferencesUtils.dialBgColor(this);
-        dialScaleColor = SharedPreferencesUtils.dialScaleColor(this);
-        dialTextColor = SharedPreferencesUtils.dialTextColor(this);
-        pointerBgColor = SharedPreferencesUtils.pointerBgColor(this);
-        pointerColor = SharedPreferencesUtils.pointerColor(this);
-        rootBgColor = SharedPreferencesUtils.rootBgColor(this);
+        dialBgColor = Settings.dialBgColor(this);
+        dialScaleColor = Settings.dialScaleColor(this);
+        dialTextColor = Settings.dialTextColor(this);
+        pointerBgColor = Settings.pointerBgColor(this);
+        pointerColor = Settings.pointerColor(this);
+        rootBgColor = Settings.rootBgColor(this);
+        locationTextColor = Settings.locationTextColor(this);
 
         dialBgColorAlphaBar.setProgress(Color.alpha(dialBgColor));
         dialBgColorRedBar.setProgress(Color.red(dialBgColor));
@@ -174,6 +186,11 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
         rootBgColorGreenBar.setProgress(Color.green(rootBgColor));
         rootBgColorBlueBar.setProgress(Color.blue(rootBgColor));
 
+        locationTextColorAlphaBar.setProgress(Color.alpha(locationTextColor));
+        locationTextColorRedBar.setProgress(Color.red(locationTextColor));
+        locationTextColorGreenBar.setProgress(Color.green(locationTextColor));
+        locationTextColorBlueBar.setProgress(Color.blue(locationTextColor));
+
         onDialBgColorChange(dialBgColor);
         onDialScaleColorChange(dialScaleColor);
         onDialTextColorChange(dialTextColor);
@@ -181,13 +198,15 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
         onPointerColorChange(pointerColor);
         onRootBgColorChange(rootBgColor);
 
-        rootBgSwitch.setChecked(SharedPreferencesUtils.isShowRootBgImg(this));
-        dialBgSwitch.setChecked(SharedPreferencesUtils.isShowDialBgImg(this));
-        pointerBgSwitch.setChecked(SharedPreferencesUtils.isShowPointerBgImg(this));
-        showSettingBtnSwitch.setChecked(SharedPreferencesUtils.isShowSettingBtn(this));
+        rootBgSwitch.setChecked(Settings.isShowRootBgImg(this));
+        dialBgSwitch.setChecked(Settings.isShowDialBgImg(this));
+        pointerBgSwitch.setChecked(Settings.isShowPointerBgImg(this));
+        showSettingBtnSwitch.setChecked(Settings.isShowSettingBtn(this));
+        stableModeSwitch.setChecked(Settings.isStableMode(this));
         onRootBackgroundImgChange();
         onDialBackgroundImgChange();
         onPointerBackgroundImgChange();
+        onLocationTextColorChange();
     }
 
     private void initView(){
@@ -195,6 +214,7 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
         setSupportActionBar(toolbar);
 
         rootBgView = (ImageView) findViewById(R.id.setting_background_body);
+        locationText = (TextView) findViewById(R.id.settting_location_text);
 
         settingSheet = findViewById(R.id.sheet_setting_root);
         BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(settingSheet);
@@ -237,6 +257,7 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
         pointerBgColorText = (TextView) findViewById(R.id.dial_pointer_bg_text);
         pointerColorText = (TextView) findViewById(R.id.dial_pointer_text);
         rootBgColorText = (TextView) findViewById(R.id.root_bg_text);
+        locationTextColorText = (TextView) findViewById(R.id.location_text_color_text);
 
         dialBgColorAlphaBar = (SeekBar) findViewById(R.id.dial_bg_a);
         dialBgColorRedBar = (SeekBar) findViewById(R.id.dial_bg_r);
@@ -268,6 +289,11 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
         rootBgColorGreenBar = (SeekBar) findViewById(R.id.root_bg_g);
         rootBgColorBlueBar = (SeekBar) findViewById(R.id.root_bg_b);
 
+        locationTextColorAlphaBar = (SeekBar) findViewById(R.id.location_text_color_a);
+        locationTextColorRedBar = (SeekBar) findViewById(R.id.location_text_color_r);
+        locationTextColorGreenBar = (SeekBar) findViewById(R.id.location_text_color_g);
+        locationTextColorBlueBar = (SeekBar) findViewById(R.id.location_text_color_b);
+
         dialBgColorAlphaBar.setOnSeekBarChangeListener(this);
         dialBgColorRedBar.setOnSeekBarChangeListener(this);
         dialBgColorGreenBar.setOnSeekBarChangeListener(this);
@@ -298,6 +324,11 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
         rootBgColorGreenBar.setOnSeekBarChangeListener(this);
         rootBgColorBlueBar.setOnSeekBarChangeListener(this);
 
+        locationTextColorAlphaBar.setOnSeekBarChangeListener(this);
+        locationTextColorRedBar.setOnSeekBarChangeListener(this);
+        locationTextColorGreenBar.setOnSeekBarChangeListener(this);
+        locationTextColorBlueBar.setOnSeekBarChangeListener(this);
+
         ImageView dialBgImg = (ImageView) findViewById(R.id.dial_bg_img);
         dialBgImg.setImageDrawable(dialBgColorDrawable = new CircleBgDrawable());
 
@@ -315,6 +346,9 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
 
         ImageView rootBgImg = (ImageView) findViewById(R.id.root_bg_img);
         rootBgImg.setImageDrawable(rootBgColorDrawable = new CircleBgDrawable());
+
+        ImageView locImg = (ImageView) findViewById(R.id.location_text_color_img);
+        locImg.setImageDrawable(locationTextColorDrawable = new CircleBgDrawable());
 
         //颜色设置部分View的初始化结束------------------------
 
@@ -342,6 +376,9 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
         }
         showSettingBtnSwitch = (SwitchCompat) findViewById(R.id.show_setting_btn_switch);
         showSettingBtnSwitch.setOnCheckedChangeListener(this);
+
+        stableModeSwitch = (SwitchCompat) findViewById(R.id.stable_mode_switch);
+        stableModeSwitch.setOnCheckedChangeListener(this);
     }
 
     @Override
@@ -500,6 +537,12 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
             case R.id.root_bg_b:
                 onRootBgColorChange();
                 break;
+            case R.id.location_text_color_a:
+            case R.id.location_text_color_r:
+            case R.id.location_text_color_g:
+            case R.id.location_text_color_b:
+                onLocationTextColorChange();
+                break;
         }
     }
 
@@ -509,7 +552,7 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
                 dialBgColorRedBar.getProgress(),
                 dialBgColorGreenBar.getProgress(),
                 dialBgColorBlueBar.getProgress());
-        SharedPreferencesUtils.setDialBgColor(this,dialBgColor);
+        Settings.setDialBgColor(this,dialBgColor);
         onDialBgColorChange(dialBgColor);
     }
 
@@ -525,7 +568,7 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
                 dialScaleColorRedBar.getProgress(),
                 dialScaleColorGreenBar.getProgress(),
                 dialScaleColorBlueBar.getProgress());
-        SharedPreferencesUtils.setDialScaleColor(this,dialScaleColor);
+        Settings.setDialScaleColor(this,dialScaleColor);
         onDialScaleColorChange(dialScaleColor);
     }
 
@@ -541,7 +584,7 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
                 dialTextColorRedBar.getProgress(),
                 dialTextColorGreenBar.getProgress(),
                 dialTextColorBlueBar.getProgress());
-        SharedPreferencesUtils.setDialTextColor(this,dialTextColor);
+        Settings.setDialTextColor(this,dialTextColor);
         onDialTextColorChange(dialTextColor);
     }
 
@@ -557,7 +600,7 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
                 pointerBgColorRedBar.getProgress(),
                 pointerBgColorGreenBar.getProgress(),
                 pointerBgColorBlueBar.getProgress());
-        SharedPreferencesUtils.setPointerBgColor(this,pointerBgColor);
+        Settings.setPointerBgColor(this,pointerBgColor);
         onPointerBgColorChange(pointerBgColor);
     }
 
@@ -573,7 +616,7 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
                 pointerColorRedBar.getProgress(),
                 pointerColorGreenBar.getProgress(),
                 pointerColorBlueBar.getProgress());
-        SharedPreferencesUtils.setPointerColor(this,pointerColor);
+        Settings.setPointerColor(this,pointerColor);
         onPointerColorChange(pointerColor);
     }
 
@@ -589,7 +632,7 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
                 rootBgColorRedBar.getProgress(),
                 rootBgColorGreenBar.getProgress(),
                 rootBgColorBlueBar.getProgress());
-        SharedPreferencesUtils.setRootBgColor(this,rootBgColor);
+        Settings.setRootBgColor(this,rootBgColor);
         onRootBgColorChange(rootBgColor);
     }
 
@@ -597,6 +640,22 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
         rootBgView.setBackgroundColor(color);
         rootBgColorDrawable.setColor(color);
         rootBgColorText.setText(getColorValue(color));
+    }
+
+    private void onLocationTextColorChange(){
+        locationTextColor = Color.argb(
+                locationTextColorAlphaBar.getProgress(),
+                locationTextColorRedBar.getProgress(),
+                locationTextColorGreenBar.getProgress(),
+                locationTextColorBlueBar.getProgress());
+        Settings.setLocationTextColor(this,locationTextColor);
+        onLocationTextColorChange(locationTextColor);
+    }
+
+    private void onLocationTextColorChange(int color){
+        locationText.setTextColor(color);
+        locationTextColorDrawable.setColor(color);
+        locationTextColorText.setText(getColorValue(color));
     }
 
     private String getColorValue(int color){
@@ -626,26 +685,29 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         switch (buttonView.getId()){
             case R.id.image_background_root_switch:
-                SharedPreferencesUtils.setShowRootBgImg(this,isChecked);
+                Settings.setShowRootBgImg(this,isChecked);
                 onRootBackgroundImgChange();
                 break;
             case R.id.image_background_dial_switch:
-                SharedPreferencesUtils.setShowDialBgImg(this,isChecked);
+                Settings.setShowDialBgImg(this,isChecked);
                 onDialBackgroundImgChange();
                 break;
             case R.id.image_background_pointer_switch:
-                SharedPreferencesUtils.setShowPointerBgImg(this,isChecked);
+                Settings.setShowPointerBgImg(this,isChecked);
                 onPointerBackgroundImgChange();
                 break;
             case R.id.show_setting_btn_switch:
-                SharedPreferencesUtils.setShowSettingBtn(this,isChecked);
+                Settings.setShowSettingBtn(this,isChecked);
+                break;
+            case R.id.stable_mode_switch:
+                Settings.setStableMode(this,isChecked);
                 break;
         }
     }
 
     private void onRootBackgroundImgChange(){
         glide.load(OtherUtil.getBackground(this)).skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(rootBgShowView);
-        if(SharedPreferencesUtils.isShowRootBgImg(this)){
+        if(Settings.isShowRootBgImg(this)){
             glide.load(OtherUtil.getBackground(this)).skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(rootBgView);
         }else{
             rootBgView.setImageDrawable(null);
@@ -654,7 +716,7 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
 
     private void onDialBackgroundImgChange(){
         glide.load(OtherUtil.getDialBackground(this)).skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(dialBgShowView);
-        dialDrawable.setShowBitmap(SharedPreferencesUtils.isShowDialBgImg(this));
+        dialDrawable.setShowBitmap(Settings.isShowDialBgImg(this));
         glide.load(OtherUtil.getDialBackground(this)).asBitmap().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(new SimpleTarget<Bitmap>() {
             @Override
             public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
@@ -665,7 +727,7 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
 
     private void onPointerBackgroundImgChange(){
         glide.load(OtherUtil.getPointerBackground(this)).skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(pointerBgShowView);
-        pointerDrawable.setShowBitmap(SharedPreferencesUtils.isShowPointerBgImg(this));
+        pointerDrawable.setShowBitmap(Settings.isShowPointerBgImg(this));
         glide.load(OtherUtil.getPointerBackground(this)).asBitmap().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(new SimpleTarget<Bitmap>() {
             @Override
             public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
