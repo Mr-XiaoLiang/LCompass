@@ -20,6 +20,8 @@ public class MainActivity extends BaseActivity {
 
     private static final int REQUEST_CAMERA = 235;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

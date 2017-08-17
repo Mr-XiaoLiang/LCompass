@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/LCompass.iml" filepath="$PROJECT_DIR$/LCompass.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/lCrop/lCrop.iml" filepath="$PROJECT_DIR$/lCrop/lCrop.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lPopMenu/lPopMenu.iml" filepath="$PROJECT_DIR$/lPopMenu/lPopMenu.iml" />
       <module fileurl="file://$PROJECT_DIR$/lSnackBar/lSnackBar.iml" filepath="$PROJECT_DIR$/lSnackBar/lSnackBar.iml" />
     </modules>
   </component>
