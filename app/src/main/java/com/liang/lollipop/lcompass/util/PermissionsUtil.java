@@ -169,6 +169,10 @@ public class PermissionsUtil {
         checkPermissions(activity,requestCode,null,permissions);
     }
 
+    public static boolean checkPermission(Context context,String permissions){
+        return ActivityCompat.checkSelfPermission(context, permissions) == PackageManager.PERMISSION_GRANTED;
+    }
+
     /**
      * 检测是否所有的权限都已经授权
      */

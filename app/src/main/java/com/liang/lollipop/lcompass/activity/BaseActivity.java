@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.PersistableBundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
@@ -34,6 +36,18 @@ public class BaseActivity extends AppCompatActivity implements View.OnClickListe
     private View rootView = null;
 
     protected RequestManager glide;
+
+    protected Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            onHandler(msg);
+            super.handleMessage(msg);
+        }
+    };
+
+    protected void onHandler(Message msg){
+
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {

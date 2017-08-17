@@ -4,9 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.liang.lollipop.lcompass.activity.MainActivity">
-    <fragment
+    <TextureView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/activity_main_background_surfaceview"/>
+    <!--<fragment
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/fragment_compass"
-        android:name="com.liang.lollipop.lcompass.fragment.CompassFragment"/>
+        android:name="com.liang.lollipop.lcompass.fragment.CompassFragment"/>-->
 </FrameLayout>
