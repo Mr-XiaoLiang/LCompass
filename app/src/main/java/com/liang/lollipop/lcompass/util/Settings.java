@@ -36,6 +36,8 @@ public class Settings {
 
     private static final String MODE_3D  = "MODE_3D";
 
+    private static final String CAMERA_MODE  = "CAMERA_MODE";
+
     public static boolean isRotatingForeground(Context context){
         return get(context,ROTATING_FOREGROUND,true);
     }
@@ -154,6 +156,14 @@ public class Settings {
 
     public static void set3DMode(Context context,boolean b){
         put(context,MODE_3D,b);
+    }
+
+    public static boolean isCameraMode(Context context){
+        return get(context,CAMERA_MODE, true);
+    }
+
+    public static void setCameraMode(Context context,boolean b){
+        put(context,CAMERA_MODE,b);
     }
 
 }

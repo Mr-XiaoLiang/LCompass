@@ -72,6 +72,8 @@ public class LSurfaceUtil implements SurfaceHolder.Callback,TextureView.SurfaceT
     private final boolean isSurfaceView;
     //预览的Surface
     private Surface previewSurface;
+    //是否开启过相机
+    private boolean isCameraOpened = false;
 
     //手机方向
     private static SparseIntArray ORIENTATIONS = new SparseIntArray();
@@ -112,7 +114,9 @@ public class LSurfaceUtil implements SurfaceHolder.Callback,TextureView.SurfaceT
             return;
         if(!isStop)
             return;
-        openCamera(resumeCameraBean.context,resumeCameraBean.cameraID,resumeCameraBean.mainHandler,resumeCameraBean.windowManager);
+        //如果以前的摄像头驱动不为空，那么就释放并且置空
+        closeCamera();
+        openCamera();
     }
 
     public void openCamera(Context context,String cameraID,Handler mainHandler,WindowManager windowManager)throws CameraAccessException{
@@ -126,6 +130,8 @@ public class LSurfaceUtil implements SurfaceHolder.Callback,TextureView.SurfaceT
         if(!withCamera||cameraManager==null){
             throw new RuntimeException("You will need to withCamera2(Context context)");
         }
+
+        isCameraOpened = true;
 
         //如果以前的摄像头驱动不为空，那么就释放并且置空
         closeCamera();
@@ -142,6 +148,8 @@ public class LSurfaceUtil implements SurfaceHolder.Callback,TextureView.SurfaceT
 
     private void openCamera()throws CameraAccessException{
         if(!isSurfaceCreate)
+            return;
+        if(!withCamera)
             return;
         if(!PermissionsUtil.checkPermission(resumeCameraBean.context,PermissionsUtil.CAMERA_)){
             throw new RuntimeException("Need camera Permission");
@@ -439,7 +447,7 @@ public class LSurfaceUtil implements SurfaceHolder.Callback,TextureView.SurfaceT
                 drawThread = new DrawThread(drawCallBack,surfaceHolder);
             drawThread.start();
         }
-        if(withCamera&&resumeCameraBean!=null){
+        if(withCamera && isCameraOpened && resumeCameraBean!=null){
             try {
                 openCamera(resumeCameraBean);
             } catch (CameraAccessException e) {
@@ -449,7 +457,7 @@ public class LSurfaceUtil implements SurfaceHolder.Callback,TextureView.SurfaceT
         isStop = false;
     }
 
-    public void closeCamera(){
+    private void closeCamera(){
         //如果摄像头驱动不为空，那么就释放并且置空
         if(cameraDevice!=null){
             cameraDevice.close();
@@ -459,6 +467,54 @@ public class LSurfaceUtil implements SurfaceHolder.Callback,TextureView.SurfaceT
             previewSurface.release();
             previewSurface = null;
         }
+    }
+
+    public void closeCameras(){
+        isCameraOpened = false;
+        closeCamera();
+    }
+
+    public void onDestroy(){
+        closeCameras();
+        cameraManager = null;
+        isCameraOpened = false;
+
+        if(previewSurface!=null){
+            previewSurface.release();
+            previewSurface = null;
+        }
+
+        if(textureView!=null){
+            textureView.setSurfaceTextureListener(null);
+            textureView = null;
+        }
+
+        if(surfaceTexture!=null){
+            surfaceTexture.release();
+            surfaceTexture = null;
+        }
+
+        if(surfaceHolder!=null){
+            surfaceHolder.removeCallback(this);
+            surfaceHolder = null;
+        }
+
+        surfaceView = null;
+
+        if(drawThread!=null){
+            drawThread.stop();
+            drawThread = null;
+        }
+
+        drawCallBack = null;
+
+        if(outpotImageReader!=null){
+            outpotImageReader.close();
+            outpotImageReader = null;
+        }
+
+        captureHandler = null;
+
     }
 
     private class ResumeCameraBean{
@@ -724,4 +780,7 @@ public class LSurfaceUtil implements SurfaceHolder.Callback,TextureView.SurfaceT
         return "未记录的异常类型，Code:"+code;
     }
 
+    public boolean isCameraOpened() {
+        return isCameraOpened;
+    }
 }

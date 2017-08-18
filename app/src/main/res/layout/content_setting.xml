@@ -15,8 +15,8 @@
     <ImageView
         android:transitionName="DIAL"
         android:id="@+id/settting_background_img"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
+        android:layout_width="@dimen/dial_diameter"
+        android:layout_height="@dimen/dial_diameter"
         android:layout_gravity="center"
         android:background="@drawable/bg_circle"
         android:elevation="3dp"/>
@@ -24,8 +24,8 @@
         android:transitionName="POINTER"
         android:id="@+id/settting_foreground_img"
         android:elevation="5dp"
-        android:layout_width="210dp"
-        android:layout_height="210dp"
+        android:layout_width="@dimen/pointer_diameter"
+        android:layout_height="@dimen/pointer_diameter"
         android:layout_gravity="center"/>
     <LinearLayout
         android:layout_width="wrap_content"

@@ -8,9 +8,53 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/activity_main_background_surfaceview"/>
-    <!--<fragment
+    <fragment
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/fragment_compass"
-        android:name="com.liang.lollipop.lcompass.fragment.CompassFragment"/>-->
+        android:name="com.liang.lollipop.lcompass.fragment.CompassFragment"/>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="right"
+        android:layout_marginTop="30dp">
+
+        <ImageView
+            android:src="@drawable/ic_camera_black_24dp"
+            android:id="@+id/camera_mode_change_img"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_margin="10dp"/>
+
+        <ImageView
+            android:src="@drawable/ic_3d_rotation_black_24dp"
+            android:id="@+id/model_3d_change_img"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_margin="10dp"/>
+
+        <ImageView
+            android:src="@drawable/ic_bubble_chart_black_24dp"
+            android:id="@+id/model_change_img"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_margin="10dp"/>
+
+        <ImageView
+            android:src="@drawable/ic_explore_black_24dp"
+            android:id="@+id/type_change_img"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_margin="10dp"/>
+
+        <ImageView
+            android:visibility="gone"
+            android:tint="#FF888888"
+            android:id="@+id/setting_img"
+            android:src="@drawable/ic_settings_white_24dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_margin="10dp"/>
+    </LinearLayout>
 </FrameLayout>

@@ -1,7 +1,7 @@
 package com.liang.lollipop.lcompass.fragment;
 
-import android.content.Context;
 import android.graphics.Color;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -76,9 +76,30 @@ public class BaseFragment extends Fragment implements View.OnClickListener {
         S(msg, "", null);
     }
 
-
     @Override
     public void onClick(View v) {
 
     }
+
+    public void onLocationUpdate(Location location){
+
+    }
+
+    public void onSensorUpdate(float z,float x,float y){
+
+    }
+
+    public void onSensorStateUpdate(int i){
+
+    }
+
+    public void onTypeChange(boolean b){}
+    public void onModelChange(boolean b){}
+    public void on3DModelChange(boolean b){}
+    public void onCameraModelChange(boolean b){}
+
+    public void onCameraOpened(){}
+
+    public void onCameraClosed(){}
+
 }
