@@ -57,6 +57,8 @@ public class MainActivity extends BaseActivity implements SensorEventListener, L
     private Sensor magnetic;
     // 老版的定位API
     private Sensor oldOrientation;
+    //气压传感器
+    private Sensor pressureSensor;
 
     // 加速度
     private float[] accelerometerValues = new float[3];
@@ -181,6 +183,8 @@ public class MainActivity extends BaseActivity implements SensorEventListener, L
             if (magnetic == null)
                 magnetic = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         }
+        if(pressureSensor==null)
+            pressureSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
 
     }
 
@@ -206,11 +210,16 @@ public class MainActivity extends BaseActivity implements SensorEventListener, L
                             SensorManager.SENSOR_DELAY_GAME);
                 }else{
                     sensorManager.registerListener(this,
-                            accelerometer, Sensor.TYPE_ACCELEROMETER);
+                            accelerometer, SensorManager.SENSOR_DELAY_FASTEST);
                     sensorManager.registerListener(this, magnetic,
-                            Sensor.TYPE_MAGNETIC_FIELD);
+                            SensorManager.SENSOR_DELAY_FASTEST);
                 }
             }
+            if(pressureSensor==null)
+                initSensor();
+            if(pressureSensor!=null)
+                sensorManager.registerListener(this,
+                        pressureSensor, SensorManager.SENSOR_DELAY_FASTEST);
         } else {
             PermissionsUtil.popPermissionsDialog(this,NO_SENSOR_PERMISSION);
             onSensorUpdate(0,0,0);
@@ -266,11 +275,22 @@ public class MainActivity extends BaseActivity implements SensorEventListener, L
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
+        //气压传感器
+        if(sensorEvent.sensor.getType() == Sensor.TYPE_PRESSURE){
+            float hPa = sensorEvent.values[0];
+            // 计算海拔
+            float height = (float) (44330000*(1-(Math.pow((hPa/1013.25),1.0/5255.0))));
+            onPressureChange(hPa,height);
+            return;
+        }
+
         if (isOldModel) {
+            //方位传感器（旧API）
             if (sensorEvent.sensor.getType() == Sensor.TYPE_ORIENTATION){
                 orientationValues = sensorEvent.values;
             }
         } else {
+            //重力传感器以及加速度传感器配合来检查方位
             if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
                 accelerometerValues = sensorEvent.values;
             }
@@ -347,6 +367,10 @@ public class MainActivity extends BaseActivity implements SensorEventListener, L
         int color = isCameraMode ? ContextCompat.getColor(this, R.color.colorPrimary) : Color.GRAY;
         cameraModeChangeView.setImageDrawable(OtherUtil.tintDrawable(this, R.drawable.ic_camera_black_24dp, color));
         fragment.onCameraModelChange(isCameraMode);
+    }
+
+    private void onPressureChange(float hPa,float altitude){
+        fragment.onPressureChange(hPa,altitude);
     }
 
     @Override

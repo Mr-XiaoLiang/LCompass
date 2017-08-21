@@ -56,6 +56,17 @@
             android:elevation="2dp"
             android:gravity="center"
             android:textColor="@color/colorPrimary"/>
+        <TextView
+            android:textStyle="bold"
+            android:id="@+id/pressure_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textSize="12sp"
+            android:elevation="2dp"
+            android:gravity="center"
+            android:visibility="gone"
+            android:textColor="@color/colorPrimary"/>
         <ImageView
             android:id="@+id/status_img"
             android:layout_width="14dp"

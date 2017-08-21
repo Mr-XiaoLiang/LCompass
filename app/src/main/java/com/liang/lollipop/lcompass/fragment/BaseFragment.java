@@ -102,4 +102,6 @@ public class BaseFragment extends Fragment implements View.OnClickListener {
 
     public void onCameraClosed(){}
 
+    public void onPressureChange(float hPa,float altitude){}
+
 }

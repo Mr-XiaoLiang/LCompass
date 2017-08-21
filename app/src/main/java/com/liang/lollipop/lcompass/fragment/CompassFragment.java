@@ -51,6 +51,8 @@ public class CompassFragment extends BaseFragment{
     private CircleBgDrawable statusDrawable;
     //位置显示的View
     private TextView locationView;
+    //压力信息的显示View
+    private TextView pressureView;
 
     //浮点数的格式化
     private DecimalFormat decimalFormat;
@@ -148,9 +150,8 @@ public class CompassFragment extends BaseFragment{
         dialImageView = (ImageView) root.findViewById(R.id.background_img);
         pointerImageView = (ImageView) root.findViewById(R.id.foreground_img);
         angleView = (TextView) root.findViewById(R.id.angle_text);
-        angleView.setOnClickListener(this);
         locationView = (TextView) root.findViewById(R.id.location_text);
-        locationView.setOnClickListener(this);
+        pressureView = (TextView) root.findViewById(R.id.pressure_text);
 
         ImageView statusView = (ImageView) root.findViewById(R.id.status_img);
         statusView.setImageDrawable(statusDrawable = new CircleBgDrawable());
@@ -172,6 +173,7 @@ public class CompassFragment extends BaseFragment{
         pointerDrawable.setColor(Settings.pointerColor(getContext()));
         rootBgView.setBackgroundColor(Settings.rootBgColor(getContext()));
         locationView.setTextColor(Settings.locationTextColor(getContext()));
+        pressureView.setTextColor(Settings.locationTextColor(getContext()));
         angleView.setTextColor(Settings.locationTextColor(getContext()));
         if(Settings.isShowRootBgImg(getContext())){
             glide.load(OtherUtil.getBackground(getContext())).skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(rootBgView);
@@ -305,8 +307,13 @@ public class CompassFragment extends BaseFragment{
     public void onLocationUpdate(Location location) {
         super.onLocationUpdate(location);
         if (null == location) {
-            locationView.setText("无位置信息");
+            locationView.setText("");
+            if(locationView.getVisibility()!=View.GONE)
+                locationView.setVisibility(View.GONE);
             return;
+        }else{
+            if(locationView.getVisibility()!=View.VISIBLE)
+                locationView.setVisibility(View.VISIBLE);
         }
         StringBuilder sb = new StringBuilder();
         double longitude = location.getLongitude();
@@ -319,9 +326,9 @@ public class CompassFragment extends BaseFragment{
         sb.append(String.valueOf(Math.abs(longitude)));
         if(location.hasAccuracy()){
             //如果有精度描述
-            location.getAccuracy();
+            float accuracy = location.getAccuracy();
             sb.append("\n精度:");
-            sb.append(String.valueOf(Math.abs(location.getAccuracy())));
+            sb.append(String.valueOf(Math.abs(accuracy)));
             sb.append("m");
         }
         if(location.hasAltitude()){
@@ -340,6 +347,24 @@ public class CompassFragment extends BaseFragment{
         }
 
         locationView.setText(sb.toString());
+    }
+
+    @Override
+    public void onPressureChange(float hPa, float altitude) {
+        super.onPressureChange(hPa, altitude);
+        if(pressureView.getVisibility()!=View.VISIBLE)
+            pressureView.setVisibility(View.VISIBLE);
+        String str = locationView.getText().toString();
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("气压:");
+        stringBuilder.append(decimalFormat.format(hPa));
+        stringBuilder.append("hPa");
+        if(!str.contains("海拔")){
+            stringBuilder.append("\n海拔:");
+            stringBuilder.append(decimalFormat.format(altitude));
+            stringBuilder.append("m");
+        }
+        pressureView.setText(stringBuilder.toString());
     }
 
     //当手机XY轴变化时，得到回调，修改指南针的XY轴旋转，说到模拟3D效果
