@@ -38,6 +38,8 @@ public class Settings {
 
     private static final String CAMERA_MODE  = "CAMERA_MODE";
 
+    private static final String CHINASE_SCALE  = "CHINASE_SCALE";
+
     public static boolean isRotatingForeground(Context context){
         return get(context,ROTATING_FOREGROUND,true);
     }
@@ -164,6 +166,14 @@ public class Settings {
 
     public static void setCameraMode(Context context,boolean b){
         put(context,CAMERA_MODE,b);
+    }
+
+    public static boolean isChinaseScale(Context context){
+        return get(context,CAMERA_MODE, false);
+    }
+
+    public static void setChinaseScale(Context context,boolean b){
+        put(context,CAMERA_MODE, b);
     }
 
 }

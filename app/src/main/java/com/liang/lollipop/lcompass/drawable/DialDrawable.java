@@ -11,6 +11,7 @@ import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.Shader;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
@@ -37,7 +38,10 @@ public class DialDrawable extends Drawable {
 
     private float textSize = 0;
 
+    private boolean isChinase = false;
+
     private String orientationArray[] = {"N","E","S","W"};
+    private String orientationZHArray[] = {"北","东","南","西"};
 
     private void initPaint(){
         bgPaint = new Paint();
@@ -89,7 +93,11 @@ public class DialDrawable extends Drawable {
         for(int i = 0;i<360;i++){
             if(i%90==0){
                 canvas.drawLine(startLoc.x,startLoc.y,startLoc.x,startLoc.y+textSize,scalePaint);
-                canvas.drawText(orientationArray[(i+1)/90],startLoc.x,startLoc.y+textSize*2+textY,textPaint);
+                if(isChinase){
+                    canvas.drawText(orientationZHArray[(i+1)/90],startLoc.x,startLoc.y+textSize*2+textY,textPaint);
+                }else{
+                    canvas.drawText(orientationArray[(i+1)/90],startLoc.x,startLoc.y+textSize*2+textY,textPaint);
+                }
             }else if(i%45==0){
                 canvas.drawLine(startLoc.x,startLoc.y,startLoc.x,startLoc.y+textSize*0.6f,scalePaint);
             }else if(i%10==0){
@@ -172,6 +180,18 @@ public class DialDrawable extends Drawable {
         float scale = Math.max(scaleX , scaleY);
         matrix.postScale(scale,scale);
         bitmapShader.setLocalMatrix(matrix);
+    }
+
+
+    public void setChinase(boolean chinase) {
+        isChinase = chinase;
+        invalidateSelf();
+    }
+
+    public void setTypeface(Typeface tf) {
+        if(textPaint!=null)
+            textPaint.setTypeface(tf);
+        invalidateSelf();
     }
 
 }

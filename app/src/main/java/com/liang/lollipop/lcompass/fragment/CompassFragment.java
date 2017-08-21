@@ -1,9 +1,11 @@
 package com.liang.lollipop.lcompass.fragment;
 
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
@@ -20,8 +22,10 @@ import com.liang.lollipop.lcompass.drawable.CircleBgDrawable;
 import com.liang.lollipop.lcompass.drawable.DialDrawable;
 import com.liang.lollipop.lcompass.drawable.PointerDrawable;
 import com.liang.lollipop.lcompass.util.OtherUtil;
+import com.liang.lollipop.lcompass.util.PermissionsUtil;
 import com.liang.lollipop.lcompass.util.Settings;
 
+import java.io.File;
 import java.text.DecimalFormat;
 
 /**
@@ -34,13 +38,13 @@ public class CompassFragment extends BaseFragment{
     //背景
     private ImageView rootBgView;
     //背景View
-    private ImageView backgroundView;
+    private ImageView dialImageView;
     //背景渲染Drawable
-    private DialDrawable backgroundDrawable;
+    private DialDrawable dialDrawable;
     //前景View
-    private ImageView foregroundView;
+    private ImageView pointerImageView;
     //前景渲染Drawable
-    private PointerDrawable foregroundDrawable;
+    private PointerDrawable pointerDrawable;
     //角度的文本
     private TextView angleView;
     //圆形的渲染
@@ -61,6 +65,8 @@ public class CompassFragment extends BaseFragment{
     private boolean is3DMode;
     //是否是相机模式
     private boolean isCameraMode;
+    //检查读取内存卡权限的ID
+    private static final int CHECK_WRITE_SD = 789;
 
     @Override
     public void onResume() {
@@ -84,12 +90,63 @@ public class CompassFragment extends BaseFragment{
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        tryGetTypeface();
+    }
+
+    private void tryGetTypeface(){
+        PermissionsUtil.checkPermissions(getActivity(), CHECK_WRITE_SD, new PermissionsUtil.OnPermissionsPass() {
+            @Override
+            public void onPermissionsPass() {
+                getTypeface();
+            }
+        },PermissionsUtil.WRITE_EXTERNAL_STORAGE);
+    }
+
+    private void getTypeface(){
+        try {
+            File dir = new File(OtherUtil.getSDFontPath());
+            if(!dir.exists()){
+                dir.mkdirs();
+                return;
+            }
+            File ttfFile = new File(dir,"fonts.ttf");
+            if(ttfFile.exists()){
+                Typeface typeFace = Typeface.createFromFile(ttfFile);
+                if(typeFace!=null)
+                    dialDrawable.setTypeface(typeFace);
+                return;
+            }
+
+            File otfFile = new File(dir,"fonts.otf");
+            if(otfFile.exists()){
+                Typeface typeFace = Typeface.createFromFile(otfFile);
+                if(typeFace!=null)
+                    dialDrawable.setTypeface(typeFace);
+            }
+        }catch (Exception e){
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode){
+            case CHECK_WRITE_SD:
+                if(PermissionsUtil.checkPermission(getContext(),PermissionsUtil.WRITE_EXTERNAL_STORAGE)){
+                    getTypeface();
+                }else{
+                    PermissionsUtil.popPermissionsDialog(getContext(),
+                            "您未授权读写储存空间，应用将无法获取储存空间中的自定义字体，您将使用系统默认的字体。" +
+                                    "\n开启后，重启应用生效。是否手动开启？");
+                }
+                break;
+        }
     }
 
     private void initView(View root) {
         rootBgView = (ImageView) root.findViewById(R.id.background_body);
-        backgroundView = (ImageView) root.findViewById(R.id.background_img);
-        foregroundView = (ImageView) root.findViewById(R.id.foreground_img);
+        dialImageView = (ImageView) root.findViewById(R.id.background_img);
+        pointerImageView = (ImageView) root.findViewById(R.id.foreground_img);
         angleView = (TextView) root.findViewById(R.id.angle_text);
         angleView.setOnClickListener(this);
         locationView = (TextView) root.findViewById(R.id.location_text);
@@ -98,8 +155,8 @@ public class CompassFragment extends BaseFragment{
         ImageView statusView = (ImageView) root.findViewById(R.id.status_img);
         statusView.setImageDrawable(statusDrawable = new CircleBgDrawable());
 
-        backgroundView.setImageDrawable(backgroundDrawable = new DialDrawable());
-        foregroundView.setImageDrawable(foregroundDrawable = new PointerDrawable());
+        dialImageView.setImageDrawable(dialDrawable = new DialDrawable());
+        pointerImageView.setImageDrawable(pointerDrawable = new PointerDrawable());
 
         dialView = root.findViewById(R.id.dial_view);
 
@@ -107,11 +164,12 @@ public class CompassFragment extends BaseFragment{
     }
 
     private void initDial(){
-        backgroundDrawable.setTextColor(Settings.dialTextColor(getContext()));
-        backgroundDrawable.setBgColor(Settings.dialBgColor(getContext()));
-        backgroundDrawable.setScaleColor(Settings.dialScaleColor(getContext()));
-        foregroundDrawable.setBgColor(Settings.pointerBgColor(getContext()));
-        foregroundDrawable.setColor(Settings.pointerColor(getContext()));
+        dialDrawable.setTextColor(Settings.dialTextColor(getContext()));
+        dialDrawable.setBgColor(Settings.dialBgColor(getContext()));
+        dialDrawable.setScaleColor(Settings.dialScaleColor(getContext()));
+        dialDrawable.setChinase(Settings.isChinaseScale(getContext()));
+        pointerDrawable.setBgColor(Settings.pointerBgColor(getContext()));
+        pointerDrawable.setColor(Settings.pointerColor(getContext()));
         rootBgView.setBackgroundColor(Settings.rootBgColor(getContext()));
         locationView.setTextColor(Settings.locationTextColor(getContext()));
         angleView.setTextColor(Settings.locationTextColor(getContext()));
@@ -120,18 +178,18 @@ public class CompassFragment extends BaseFragment{
         }else{
             rootBgView.setImageDrawable(null);
         }
-        backgroundDrawable.setShowBitmap(Settings.isShowDialBgImg(getContext()));
+        dialDrawable.setShowBitmap(Settings.isShowDialBgImg(getContext()));
         glide.load(OtherUtil.getDialBackground(getContext())).asBitmap().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(new SimpleTarget<Bitmap>() {
             @Override
             public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                backgroundDrawable.setBitmap(resource);
+                dialDrawable.setBitmap(resource);
             }
         });
-        foregroundDrawable.setShowBitmap(Settings.isShowPointerBgImg(getContext()));
+        pointerDrawable.setShowBitmap(Settings.isShowPointerBgImg(getContext()));
         glide.load(OtherUtil.getPointerBackground(getContext())).asBitmap().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(new SimpleTarget<Bitmap>() {
             @Override
             public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                foregroundDrawable.setBitmap(resource);
+                pointerDrawable.setBitmap(resource);
             }
         });
     }
@@ -140,9 +198,9 @@ public class CompassFragment extends BaseFragment{
     public void onTypeChange(boolean b) {
         isRotatingForeground = b;
         if (b) {
-            backgroundView.setRotation(0);
+            dialImageView.setRotation(0);
         } else {
-            foregroundView.setRotation(0);
+            pointerImageView.setRotation(0);
         }
     }
 
@@ -155,9 +213,9 @@ public class CompassFragment extends BaseFragment{
     public void on3DModelChange(boolean b) {
         is3DMode = b;
         if(b){
-            backgroundView.setBackgroundResource(0);
+            dialImageView.setBackgroundResource(0);
         }else{
-            backgroundView.setBackgroundResource(R.drawable.bg_circle);
+            dialImageView.setBackgroundResource(R.drawable.bg_circle);
         }
     }
 
@@ -174,9 +232,9 @@ public class CompassFragment extends BaseFragment{
         if(isStableMode)
             angle = (int)(angle+0.5f);
         if (isRotatingForeground) {
-            foregroundView.setRotation(-angle);
+            pointerImageView.setRotation(-angle);
         } else {
-            backgroundView.setRotation(-angle);
+            dialImageView.setRotation(-angle);
         }
     }
 
@@ -287,15 +345,15 @@ public class CompassFragment extends BaseFragment{
     //当手机XY轴变化时，得到回调，修改指南针的XY轴旋转，说到模拟3D效果
     private void onPitchRollChange(float x,float y){
         if(is3DMode){
-            backgroundView.setRotationX(-x);
-            backgroundView.setRotationY(y);
-            foregroundView.setRotationX(-x);
-            foregroundView.setRotationY(y);
+            dialImageView.setRotationX(-x);
+            dialImageView.setRotationY(y);
+            pointerImageView.setRotationX(-x);
+            pointerImageView.setRotationY(y);
         }else{
-            backgroundView.setRotationX(0);
-            backgroundView.setRotationY(0);
-            foregroundView.setRotationX(0);
-            foregroundView.setRotationY(0);
+            dialImageView.setRotationX(0);
+            dialImageView.setRotationY(0);
+            pointerImageView.setRotationX(0);
+            pointerImageView.setRotationY(0);
         }
     }
 

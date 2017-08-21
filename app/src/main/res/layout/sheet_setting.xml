@@ -762,6 +762,43 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
             </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@android:color/white"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="0px">
+                <LinearLayout
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="中文模式"
+                        android:gravity="center_vertical"
+                        android:textSize="16sp"
+                        android:textColor="@android:color/white"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#DDDDDD"
+                        android:textSize="12sp"
+                        android:text="开启中文模式之后，方位标志将会以中文显示,但是这可能会影响界面的显示效果。同时，应用支持自定义字体，前往手机储存目录，找到LCompass/ttf/,里面放一个名为fonts.ttf(或fonts.otf)的字体，再重启应用即可。"/>
+                </LinearLayout>
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/chinase_mode_switch"
+                    android:checked="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="70dp" />

@@ -32,6 +32,8 @@ public class OtherUtil {
 
     public static final String USER_INFO_BG = ".png";
 
+    public static final String APP_NAME = "LCompass";
+
     public static String getUserInfoBg(String token){
         return token+USER_INFO_BG;
     }
@@ -148,27 +150,31 @@ public class OtherUtil {
     }
 
     public static String getSDImgPath() {
-        return Environment.getExternalStorageDirectory() + "/LCompass/img";
+        return Environment.getExternalStorageDirectory() + "/"+APP_NAME+"/img";
     }
 
     public static String getBGImgPath() {
-        return Environment.getExternalStorageDirectory() + "/LCompass/img/bg";
+        return Environment.getExternalStorageDirectory() + "/"+APP_NAME+"/img/bg";
     }
 
     public static String getSDSmallImgPath() {
-        return Environment.getExternalStorageDirectory() + "/LCompass/img/small";
+        return Environment.getExternalStorageDirectory() + "/"+APP_NAME+"/img/small";
     }
 
     public static String getSDVoicePath() {
-        return Environment.getExternalStorageDirectory() + "/LCompass/voice";
+        return Environment.getExternalStorageDirectory() + "/"+APP_NAME+"/voice";
     }
 
     public static String getSDTxtPath() {
-        return Environment.getExternalStorageDirectory() + "/LCompass/txt";
+        return Environment.getExternalStorageDirectory() + "/"+APP_NAME+"/txt";
+    }
+
+    public static String getSDFontPath() {
+        return Environment.getExternalStorageDirectory() + "/"+APP_NAME+"/ttf";
     }
 
     public static String getSDAppPath(Context context) {
-        return Environment.getExternalStorageDirectory() + "/LCompass/app";
+        return Environment.getExternalStorageDirectory() + "/"+APP_NAME+"/app";
     }
 
     /**

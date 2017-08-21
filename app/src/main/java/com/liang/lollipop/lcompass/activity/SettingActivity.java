@@ -3,6 +3,7 @@ package com.liang.lollipop.lcompass.activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,6 +27,7 @@ import com.liang.lollipop.lcompass.drawable.CircleBgDrawable;
 import com.liang.lollipop.lcompass.drawable.DialDrawable;
 import com.liang.lollipop.lcompass.drawable.PointerDrawable;
 import com.liang.lollipop.lcompass.util.OtherUtil;
+import com.liang.lollipop.lcompass.util.PermissionsUtil;
 import com.liang.lollipop.lcompass.util.Settings;
 import com.liang.lollipop.lcompass.util.SharedPreferencesUtils;
 import com.liang.lollipop.lcrop.LCropUtil;
@@ -34,6 +36,7 @@ import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Set;
 
 /**
  * @author Lollipop
@@ -50,6 +53,9 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
     private static final int REQUEST_CROP_ROOT_BG = 466;
     private static final int REQUEST_CROP_DIAL_BG = 467;
     private static final int REQUEST_CROP_POINTER_BG = 468;
+
+    //检查读取内存卡权限的ID
+    private static final int CHECK_WRITE_SD = 789;
 
     /*-------------------------------常量部分-结束-------------------------------*/
 
@@ -134,11 +140,65 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
     private SwitchCompat showSettingBtnSwitch;
     private SwitchCompat stableModeSwitch;
 
+    private SwitchCompat chinaseModeSwitch;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
         initView();
+        tryGetTypeface();
+    }
+
+    private void tryGetTypeface(){
+        PermissionsUtil.checkPermissions(this, CHECK_WRITE_SD, new PermissionsUtil.OnPermissionsPass() {
+            @Override
+            public void onPermissionsPass() {
+                getTypeface();
+            }
+        },PermissionsUtil.WRITE_EXTERNAL_STORAGE);
+    }
+
+    private void getTypeface(){
+        try {
+            File dir = new File(OtherUtil.getSDFontPath());
+            if(!dir.exists()){
+                dir.mkdirs();
+                return;
+            }
+            File ttfFile = new File(dir,"fonts.ttf");
+            if(ttfFile.exists()){
+                Typeface typeFace = Typeface.createFromFile(ttfFile);
+                if(typeFace!=null)
+                    dialDrawable.setTypeface(typeFace);
+                return;
+            }
+
+            File otfFile = new File(dir,"fonts.otf");
+            if(otfFile.exists()){
+                Typeface typeFace = Typeface.createFromFile(otfFile);
+                if(typeFace!=null)
+                    dialDrawable.setTypeface(typeFace);
+            }
+        }catch (Exception e){
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode){
+            case CHECK_WRITE_SD:
+                if(PermissionsUtil.checkPermission(this,PermissionsUtil.WRITE_EXTERNAL_STORAGE)){
+                    getTypeface();
+                }else{
+                    PermissionsUtil.popPermissionsDialog(this,
+                            "您未授权读写储存空间，应用将无法获取储存空间中的自定义字体，您将使用系统默认的字体。" +
+                                    "\n开启后，重启应用生效。是否手动开启？");
+                }
+                break;
+        }
     }
 
     @Override
@@ -203,10 +263,14 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
         pointerBgSwitch.setChecked(Settings.isShowPointerBgImg(this));
         showSettingBtnSwitch.setChecked(Settings.isShowSettingBtn(this));
         stableModeSwitch.setChecked(Settings.isStableMode(this));
+        chinaseModeSwitch.setChecked(Settings.isChinaseScale(this));
+
         onRootBackgroundImgChange();
         onDialBackgroundImgChange();
         onPointerBackgroundImgChange();
         onLocationTextColorChange();
+        onLanguageModeChange();
+
     }
 
     private void initView(){
@@ -379,6 +443,9 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
 
         stableModeSwitch = (SwitchCompat) findViewById(R.id.stable_mode_switch);
         stableModeSwitch.setOnCheckedChangeListener(this);
+
+        chinaseModeSwitch = (SwitchCompat) findViewById(R.id.chinase_mode_switch);
+        chinaseModeSwitch.setOnCheckedChangeListener(this);
     }
 
     @Override
@@ -642,6 +709,13 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
         rootBgColorText.setText(getColorValue(color));
     }
 
+    private void onLanguageModeChange(){
+        onLanguageModeChange(Settings.isChinaseScale(this));
+    }
+    private void onLanguageModeChange(boolean type){
+        dialDrawable.setChinase(type);
+    }
+
     private void onLocationTextColorChange(){
         locationTextColor = Color.argb(
                 locationTextColorAlphaBar.getProgress(),
@@ -701,6 +775,10 @@ public class SettingActivity extends BaseActivity implements SeekBar.OnSeekBarCh
                 break;
             case R.id.stable_mode_switch:
                 Settings.setStableMode(this,isChecked);
+                break;
+            case R.id.chinase_mode_switch:
+                Settings.setChinaseScale(this,isChecked);
+                onLanguageModeChange(isChecked);
                 break;
         }
     }
