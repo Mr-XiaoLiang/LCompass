@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.util.Pair;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.TextureView;
@@ -44,10 +45,6 @@ public class MainActivity extends BaseActivity implements SensorEventListener, L
 
     private static final int REQUEST_LOCATION = 23;
     private static final int REQUEST_SENSOR = 24;
-
-    private static final String NO_LOC_PERMISSION = "您未授权使用位置权限，将无法显示位置信息。是否前往开启？";
-    private static final String NO_SENSOR_PERMISSION = "您未授权使用传感器，将无法显示方位信息。是否前往开启？";
-    private static final String NO_CAMERA_PERMISSION = "您未授权使用摄像头，将无法显示方位信息。是否前往开启？";
 
     //传感器管理器
     private SensorManager sensorManager;
@@ -105,9 +102,12 @@ public class MainActivity extends BaseActivity implements SensorEventListener, L
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         setContentView(R.layout.activity_main);
         initView();
+
         PermissionsUtil.checkPermissions(this, REQUEST_LOCATION, PermissionsUtil.ACCESS_FINE_LOCATION);
         PermissionsUtil.checkPermissions(this, REQUEST_SENSOR, PermissionsUtil.BODY_SENSORS);
         PermissionsUtil.checkPermissions(this, REQUEST_CAMERA,PermissionsUtil.CAMERA_);
+
+        Settings.checkFirstOpen(this);
     }
 
     @Override
@@ -221,7 +221,7 @@ public class MainActivity extends BaseActivity implements SensorEventListener, L
                 sensorManager.registerListener(this,
                         pressureSensor, SensorManager.SENSOR_DELAY_FASTEST);
         } else {
-            PermissionsUtil.popPermissionsDialog(this,NO_SENSOR_PERMISSION);
+            PermissionsUtil.popPermissionsDialog(this,getString(R.string.no_sensor_permission));
             onSensorUpdate(0,0,0);
         }
     }
@@ -249,7 +249,7 @@ public class MainActivity extends BaseActivity implements SensorEventListener, L
 
     private void openCamera(){
         if(!PermissionsUtil.checkPermissions(this,PermissionsUtil.CAMERA_)){
-            PermissionsUtil.popPermissionsDialog(this,NO_CAMERA_PERMISSION);
+            PermissionsUtil.popPermissionsDialog(this,getString(R.string.no_camera_permission));
             return;
         }
         if(surfaceUtil.isCameraOpened())
@@ -261,7 +261,7 @@ public class MainActivity extends BaseActivity implements SensorEventListener, L
                 surfaceUtil.openCamera(MainActivity.this,ids[0],handler,getWindowManager());
                 onCameraOpened();
             }else{
-                S("找不到相机");
+                S(getString(R.string.no_find_camera));
             }
         } catch (CameraAccessException e) {
             S(LSurfaceUtil.getCodeError(e.getReason()));
@@ -320,7 +320,7 @@ public class MainActivity extends BaseActivity implements SensorEventListener, L
     private void initLocation() {
         if(!PermissionsUtil.checkPermission(this,PermissionsUtil.ACCESS_FINE_LOCATION)
                 &&!PermissionsUtil.checkPermission(this,PermissionsUtil.ACCESS_COARSE_LOCATION)){
-            PermissionsUtil.popPermissionsDialog(this,NO_LOC_PERMISSION);
+            PermissionsUtil.popPermissionsDialog(this,getString(R.string.no_loc_permission));
             onLocationChanged(null);
             return;
         }
@@ -337,7 +337,7 @@ public class MainActivity extends BaseActivity implements SensorEventListener, L
         String locationProviderName = locationManager.getBestProvider(criteria, true);
 
         if (TextUtils.isEmpty(locationProviderName)) {
-            S("未找到位置提供装置，请检查是否开启定位");
+            S(getString(R.string.no_find_location));
             onLocationChanged(null);
             return;
         }
@@ -380,7 +380,7 @@ public class MainActivity extends BaseActivity implements SensorEventListener, L
                 isRotatingForeground = !isRotatingForeground;
                 Settings.setRotatingForeground(this,isRotatingForeground);
                 onTypeChange();
-                S(isRotatingForeground ? "当前为指针模式" : "当前为表盘模式","查看区别", new View.OnClickListener() {
+                S(isRotatingForeground ? getString(R.string.pointer_model) : getString(R.string.dial_model),getString(R.string.difference), new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         showTypeInfo();
@@ -391,7 +391,7 @@ public class MainActivity extends BaseActivity implements SensorEventListener, L
                 isOldModel = !isOldModel;
                 Settings.setOldModel(this,isOldModel);
                 onModelChange();
-                S(isOldModel ? "当前为旧版API模式" : "当前为新版API模式","查看区别", new View.OnClickListener() {
+                S(isOldModel ? getString(R.string.old_api_model) : getString(R.string.new_api_model),getString(R.string.difference), new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         showModelInfo();
@@ -407,13 +407,13 @@ public class MainActivity extends BaseActivity implements SensorEventListener, L
                 is3DMode = !is3DMode;
                 Settings.set3DMode(this,is3DMode);
                 on3DModelChange();
-                S(is3DMode ? "当前为3D模式" : "当前为2D模式");
+                S(is3DMode ? getString(R.string.c3d_model) : getString(R.string.c2d_model));
                 break;
             case R.id.camera_mode_change_img:
                 isCameraMode = !isCameraMode;
                 Settings.setCameraMode(this,isCameraMode);
                 onCameraModelChange();
-                S(isCameraMode ? "当前为相机模式" : "当前为普通模式");
+                S(isCameraMode ? getString(R.string.open_camera_mode) : getString(R.string.off_camera_mode));
                 if(isCameraMode)
                     PermissionsUtil.checkPermissions(this,REQUEST_CAMERA,PermissionsUtil.CAMERA_);
                 break;
@@ -421,13 +421,13 @@ public class MainActivity extends BaseActivity implements SensorEventListener, L
     }
 
     private void showModelInfo() {
-        new AlertDialog.Builder(this).setTitle("API区别")
+        new AlertDialog.Builder(this).setTitle(R.string.api_difference)
                 .setMessage(R.string.api_info)
                 .show();
     }
 
     private void showTypeInfo() {
-        new AlertDialog.Builder(this).setTitle("模式区别")
+        new AlertDialog.Builder(this).setTitle(R.string.model_difference)
                 .setMessage(R.string.type_info)
                 .show();
     }
@@ -468,15 +468,15 @@ public class MainActivity extends BaseActivity implements SensorEventListener, L
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
         if(LocationProvider.OUT_OF_SERVICE==status){
-            S("位置服务已断开");
+            S(getString(R.string.location_service_disconnect));
             return;
         }
         if(LocationProvider.TEMPORARILY_UNAVAILABLE==status){
-            S("位置服务暂不可用");
+            S(getString(R.string.location_service_disable));
             return;
         }
         if(LocationProvider.AVAILABLE==status){
-            S("位置服务已恢复运行");
+            S(getString(R.string.location_service_restore));
             initLocation();
         }
         onLocationChanged(null);
@@ -484,13 +484,13 @@ public class MainActivity extends BaseActivity implements SensorEventListener, L
 
     @Override
     public void onProviderEnabled(String provider) {
-        S("有新的位置提供源可用:"+provider.toUpperCase());
+        S(getString(R.string.new_location_provider)+provider.toUpperCase());
         initLocation();
     }
 
     @Override
     public void onProviderDisabled(String provider) {
-        S("位置提供源被禁用:"+provider.toUpperCase());
+        S(getString(R.string.disable_location_provider)+provider.toUpperCase());
         initLocation();
     }
 

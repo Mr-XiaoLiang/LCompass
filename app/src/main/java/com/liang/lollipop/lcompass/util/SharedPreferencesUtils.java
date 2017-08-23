@@ -27,15 +27,22 @@ public class SharedPreferencesUtils {
 
     private static  final String USER = "LCompass";
 
-    public static <T> void put( Context context, String key, T value ) {
+    public static <T> void put( Context context, String key, T value ){
         if(context==null)
             return;
+        SharedPreferences mShareConfig =
+                context.getSharedPreferences( USER, Context.MODE_PRIVATE );
+        put(mShareConfig,key,value);
+    }
+
+    public static <T> void put(SharedPreferences mShareConfig, String key, T value ) {
+
+        if(mShareConfig==null)
+            return;
         if ( notNull( value ) ) {
-            SharedPreferences mShareConfig =
-                    context.getSharedPreferences( USER, Context.MODE_PRIVATE );
             Editor conEdit = mShareConfig.edit();
             if ( value instanceof String ) {
-                conEdit.putString( key.trim(), ( (String) value ).trim() );
+                conEdit.putString( key, ( (String) value ).trim() );
             } else if ( value instanceof Long ) {
                 conEdit.putLong( key, (Long) value );
             } else if ( value instanceof Boolean ) {
@@ -49,13 +56,17 @@ public class SharedPreferencesUtils {
         }
     }
 
-    public static <T> T get( Context context, String key, T defValue ) {
+    public static <T> T get( Context context, String key, T defValue ){
         if(context==null)
             return null;
+        SharedPreferences mShareConfig =
+                context.getSharedPreferences(USER, Context.MODE_PRIVATE);
+        return get(mShareConfig,key,defValue);
+    }
+
+    public static <T> T get(SharedPreferences mShareConfig, String key, T defValue ) {
         T value = null;
         if ( notNull( key ) ) {
-            SharedPreferences mShareConfig =
-                    context.getSharedPreferences(USER, Context.MODE_PRIVATE);
             if ( null != mShareConfig ) {
                 if (defValue instanceof  String) {
                     value = (T) mShareConfig.getString(key, (String)defValue);

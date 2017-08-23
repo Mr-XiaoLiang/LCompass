@@ -7,8 +7,8 @@ android {
         applicationId "com.liang.lollipop.lcompass"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 7
-        versionName '2.2'
+        versionCode 8
+        versionName '2.5'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -32,6 +32,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile project(':lSnackBar')
     compile project(':lCrop')
-    compile 'com.yalantis:ucrop:2.2.0-native'
     compile project(':lPopMenu')
 }

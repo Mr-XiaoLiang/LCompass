@@ -59,14 +59,10 @@ public class CompassFragment extends BaseFragment{
 
     //是否渲染前景
     private boolean isRotatingForeground;
-    //老版模式
-    private boolean isOldModel;
     //是否启用稳定模式
     private boolean isStableMode;
-    //是否启用3D模式
+
     private boolean is3DMode;
-    //是否是相机模式
-    private boolean isCameraMode;
     //检查读取内存卡权限的ID
     private static final int CHECK_WRITE_SD = 789;
 
@@ -74,10 +70,8 @@ public class CompassFragment extends BaseFragment{
     public void onResume() {
         super.onResume();
         isRotatingForeground = Settings.isRotatingForeground(getContext());
-        isOldModel = Settings.oldModel(getContext());
         isStableMode = Settings.isStableMode(getContext());
         is3DMode = Settings.is3DMode(getContext());
-        isCameraMode = Settings.isCameraMode(getContext());
         initDial();
     }
 
@@ -176,24 +170,30 @@ public class CompassFragment extends BaseFragment{
         pressureView.setTextColor(Settings.locationTextColor(getContext()));
         angleView.setTextColor(Settings.locationTextColor(getContext()));
         if(Settings.isShowRootBgImg(getContext())){
-            glide.load(OtherUtil.getBackground(getContext())).skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(rootBgView);
+            glide.load(Settings.getRootBgImg(getContext())).skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(rootBgView);
         }else{
             rootBgView.setImageDrawable(null);
         }
         dialDrawable.setShowBitmap(Settings.isShowDialBgImg(getContext()));
-        glide.load(OtherUtil.getDialBackground(getContext())).asBitmap().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(new SimpleTarget<Bitmap>() {
+        glide.load(Settings.getDialBgImg(getContext())).asBitmap().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(new SimpleTarget<Bitmap>() {
             @Override
             public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                 dialDrawable.setBitmap(resource);
             }
         });
         pointerDrawable.setShowBitmap(Settings.isShowPointerBgImg(getContext()));
-        glide.load(OtherUtil.getPointerBackground(getContext())).asBitmap().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(new SimpleTarget<Bitmap>() {
+        glide.load(Settings.getPointerBgImg(getContext())).asBitmap().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(new SimpleTarget<Bitmap>() {
             @Override
             public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                 pointerDrawable.setBitmap(resource);
             }
         });
+
+        if(Settings.isOverflowAvoid(getContext())&&is3DMode){
+            dialDrawable.setScaleColor(0);
+        }else{
+            dialDrawable.setScaleColor(Settings.dialScaleColor(getContext()));
+        }
     }
 
     @Override
@@ -207,23 +207,14 @@ public class CompassFragment extends BaseFragment{
     }
 
     @Override
-    public void onModelChange(boolean b) {
-        isOldModel = b;
-    }
-
-    @Override
     public void on3DModelChange(boolean b) {
         is3DMode = b;
-        if(b){
-            dialImageView.setBackgroundResource(0);
+        dialImageView.setBackgroundResource(b?0:R.drawable.bg_circle);
+        if(Settings.isOverflowAvoid(getContext())&&b){
+            dialDrawable.setScaleColor(0);
         }else{
-            dialImageView.setBackgroundResource(R.drawable.bg_circle);
+            dialDrawable.setScaleColor(Settings.dialScaleColor(getContext()));
         }
-    }
-
-    @Override
-    public void onCameraModelChange(boolean b) {
-        isCameraMode = b;
     }
 
     private void formatText(float angle) {

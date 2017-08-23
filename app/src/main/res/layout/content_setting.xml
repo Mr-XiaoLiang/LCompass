@@ -3,46 +3,53 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     tools:context="com.liang.lollipop.lcompass.activity.SettingActivity"
-    tools:showIn="@layout/activity_setting">
+    tools:showIn="@layout/activity_setting"
+    android:background="@android:color/white"
+    android:elevation="2dp">
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerCrop"
         android:background="@color/background"
+        android:scaleType="centerCrop"
         android:id="@+id/setting_background_body"/>
-    <ImageView
-        android:transitionName="DIAL"
-        android:id="@+id/settting_background_img"
-        android:layout_width="@dimen/dial_diameter"
-        android:layout_height="@dimen/dial_diameter"
-        android:layout_gravity="center"
-        android:background="@drawable/bg_circle"
-        android:elevation="3dp"/>
-    <ImageView
-        android:transitionName="POINTER"
-        android:id="@+id/settting_foreground_img"
-        android:elevation="5dp"
-        android:layout_width="@dimen/pointer_diameter"
-        android:layout_height="@dimen/pointer_diameter"
-        android:layout_gravity="center"/>
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="70dp"
-        android:gravity="center">
-        <TextView
-            android:textStyle="bold"
-            android:id="@+id/settting_location_text"
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ImageView
+            android:layout_margin="10dp"
+            android:transitionName="DIAL"
+            android:id="@+id/settting_background_img"
+            android:layout_width="@dimen/dial_diameter"
+            android:layout_height="@dimen/dial_diameter"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_circle"
+            android:elevation="3dp"/>
+        <ImageView
+            android:layout_margin="10dp"
+            android:transitionName="POINTER"
+            android:id="@+id/settting_foreground_img"
+            android:elevation="5dp"
+            android:layout_width="@dimen/pointer_diameter"
+            android:layout_height="@dimen/pointer_diameter"
+            android:layout_gravity="center"/>
+        <LinearLayout
+            android:padding="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/app_name"
-            android:textSize="18sp"
-            android:elevation="2dp"
-            android:gravity="center"
-            android:textColor="@color/colorPrimary"/>
-    </LinearLayout>
+            android:orientation="vertical"
+            android:layout_gravity="bottom">
+            <TextView
+                android:textStyle="bold"
+                android:id="@+id/settting_location_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_name"
+                android:textSize="18sp"
+                android:elevation="2dp"
+                android:gravity="center"
+                android:textColor="@color/colorPrimary"/>
+        </LinearLayout>
+    </FrameLayout>
 </FrameLayout>

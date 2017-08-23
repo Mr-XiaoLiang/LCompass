@@ -233,6 +233,15 @@ public class OtherUtil {
         return new File(getContextImagePath(context),"PointerBackground.png").getAbsolutePath();
     }
 
+    public static boolean saveImage(Context context,String name, String path) {
+        return saveFile(path,name,getContextImagePath(context));
+    }
+
+    public static String getImagePath(Context context,String name){
+        File file = new File(getContextImagePath(context),name);
+        return file.getAbsolutePath();
+    }
+
     public static String getTempImgPath(Context context){
         return getTempImgFile(context).getAbsolutePath();
     }

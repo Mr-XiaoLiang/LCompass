@@ -25,6 +25,7 @@ import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -147,7 +148,7 @@ public class LSnackBar {
      * @see #setDuration
      */
     public static final int LENGTH_LONG = 0;
-    
+
     @IntDef({LENGTH_INDEFINITE, LENGTH_SHORT, LENGTH_LONG})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Duration {
@@ -242,8 +243,19 @@ public class LSnackBar {
                     mView.setPadding(0, stateBarHeight, 0, 0);
                     mView.setMinimumHeight(stateBarHeight+actionBarHeight);
                 }else{
-                    mView.setPadding(0, ScreenUtil.getStatusHeight(mContext), 0, 0);
-                    mView.setMinimumHeight(ScreenUtil.getActionBarHeight(mContext)+ScreenUtil.getStatusHeight(mContext));
+                    int[] size = new int[2];
+                    int stateSize = ScreenUtil.getStatusHeight(mContext);
+                    int paddingTop = 0;
+                    mParent.getLocationOnScreen(size);
+                    if(size[1]>stateSize){
+                        paddingTop = mParent.getPaddingTop();
+                    }else if(size[1] == 0){
+                        paddingTop = stateSize;
+                    }else{
+                        paddingTop = size[1];
+                    }
+                    mView.setPadding(0, paddingTop, 0, 0);
+                    mView.setMinimumHeight(ScreenUtil.getActionBarHeight(mContext)+paddingTop);
                 }
             }else{
                 if(stateBarHeight>0 || actionBarHeight>0){
@@ -671,8 +683,18 @@ public class LSnackBar {
                     }
                 });
                 ((CoordinatorLayout.LayoutParams) lp).setBehavior(behavior);
-
-                ((CoordinatorLayout.LayoutParams) lp).setMargins(0, ScreenUtil.getStatusHeight(mContext)*-1, 0, 0);
+                int[] size = new int[2];
+                int stateSize = ScreenUtil.getStatusHeight(mContext);
+                int marginTop = 0;
+                mParent.getLocationOnScreen(size);
+                if(size[1]>stateSize){
+                    marginTop = stateSize*-1;
+                }else if(size[1] == 0){
+                    marginTop = 0;
+                }else{
+                    marginTop = (size[1]+stateSize)*-1;
+                }
+                ((CoordinatorLayout.LayoutParams) lp).setMargins(0, marginTop, 0, 0);
             }
             mParent.addView(mView);
         }
