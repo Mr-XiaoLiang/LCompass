@@ -29,6 +29,12 @@
         <item name="colorControlNormal">#8FFF</item>
         <item name="android:colorControlHighlight">#AFFF</item>
     </style>
+
+    <style name="GraySeekBar" parent="Base.Widget.AppCompat.SeekBar" >
+        <item name="colorControlActivated">#595959</item>
+        <item name="colorControlNormal">#884b4b4b</item>
+        <item name="android:colorControlHighlight">#AA404040</item>
+    </style>
     <style name="RedSeekBar" parent="Base.Widget.AppCompat.SeekBar" >
         <item name="colorControlActivated">#F00</item>
         <item name="colorControlNormal">#8F00</item>

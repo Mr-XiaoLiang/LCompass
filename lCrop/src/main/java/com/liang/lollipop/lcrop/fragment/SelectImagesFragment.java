@@ -94,6 +94,10 @@ public class SelectImagesFragment extends DialogFragment
 
     private void initView(){
         RequestManager glide = Glide.with(this);
+
+        if(isShowCamera)
+            imageBeen.add(new ImageBean(ImageBean.TYPE_CAMERA));
+
         GridLayoutManager layoutManager = new GridLayoutManager(getActivity(),columns);//初始化列表layout管理器
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);//设定为纵向
         recyclerView.setLayoutManager(layoutManager);//将管理器设置进列表

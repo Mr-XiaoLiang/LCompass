@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="10dp">
+        <ImageView
+            android:id="@+id/dialog_color_select_show"
+            android:layout_width="match_parent"
+            android:minWidth="50dp"
+            android:layout_height="0px"
+            android:layout_weight="1"/>
+        <TextView
+            android:id="@+id/dialog_color_select_value"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/darker_gray"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <SeekBar
+            android:id="@+id/dialog_color_select_a"
+            android:max="255"
+            android:theme="@style/GraySeekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp"/>
+        <SeekBar
+            android:id="@+id/dialog_color_select_r"
+            android:max="255"
+            android:theme="@style/RedSeekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp"/>
+        <SeekBar
+            android:id="@+id/dialog_color_select_g"
+            android:max="255"
+            android:theme="@style/GreenSeekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp"/>
+        <SeekBar
+            android:id="@+id/dialog_color_select_b"
+            android:max="255"
+            android:theme="@style/BlueSeekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp"/>
+    </LinearLayout>
+</LinearLayout>

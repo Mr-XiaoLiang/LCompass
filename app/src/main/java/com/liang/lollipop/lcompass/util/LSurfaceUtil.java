@@ -283,6 +283,9 @@ public class LSurfaceUtil implements SurfaceHolder.Callback,TextureView.SurfaceT
                 cameraDevice = null;
             }
             cameraDevice = camera;
+            if(!isSurfaceCreate){
+                return;
+            }
             try {
                 CaptureStateCallback captureStateCallback =
                         takePreview(cameraDevice,captureHandler,captureCallback,preview,outPut);
@@ -416,6 +419,8 @@ public class LSurfaceUtil implements SurfaceHolder.Callback,TextureView.SurfaceT
                              Surface preview,Surface... outPut)throws CameraAccessException{
         if(device==null)
             throw new RuntimeException("takePreview Error,CameraDevice is null");
+        if(!isSurfaceCreate||!preview.isValid())
+            return null;
         // 创建预览需要的CaptureRequest.Builder
         CaptureRequest.Builder previewRequestBuilder = device.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
         // 将SurfaceView的surface作为CaptureRequest.Builder的目标

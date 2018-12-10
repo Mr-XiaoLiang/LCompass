@@ -6,24 +6,36 @@
     android:layout_height="match_parent"
     tools:context="com.liang.lollipop.lcompass.activity.SettingActivity">
 
-    <include layout="@layout/content_setting" />
-
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay"
-        android:background="@android:color/transparent"
-        app:elevation="0px">
+        android:background="@color/colorPrimary">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/activity_setting_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@android:color/transparent"
+            android:background="@color/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/sheet_setting" />
+    <!--<include layout="@layout/sheet_setting" />-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <include layout="@layout/content_setting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <fragment
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/sheet_setting_preference"
+            android:name="com.liang.lollipop.lcompass.fragment.SettingsFragment"/>
+    </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>

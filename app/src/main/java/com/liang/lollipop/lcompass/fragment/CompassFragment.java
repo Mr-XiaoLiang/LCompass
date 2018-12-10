@@ -59,14 +59,10 @@ public class CompassFragment extends BaseFragment{
 
     //是否渲染前景
     private boolean isRotatingForeground;
-    //老版模式
-    private boolean isOldModel;
     //是否启用稳定模式
     private boolean isStableMode;
-    //是否启用3D模式
+
     private boolean is3DMode;
-    //是否是相机模式
-    private boolean isCameraMode;
     //检查读取内存卡权限的ID
     private static final int CHECK_WRITE_SD = 789;
 
@@ -74,10 +70,8 @@ public class CompassFragment extends BaseFragment{
     public void onResume() {
         super.onResume();
         isRotatingForeground = Settings.isRotatingForeground(getContext());
-        isOldModel = Settings.oldModel(getContext());
         isStableMode = Settings.isStableMode(getContext());
         is3DMode = Settings.is3DMode(getContext());
-        isCameraMode = Settings.isCameraMode(getContext());
         initDial();
     }
 
@@ -137,9 +131,7 @@ public class CompassFragment extends BaseFragment{
                 if(PermissionsUtil.checkPermission(getContext(),PermissionsUtil.WRITE_EXTERNAL_STORAGE)){
                     getTypeface();
                 }else{
-                    PermissionsUtil.popPermissionsDialog(getContext(),
-                            "您未授权读写储存空间，应用将无法获取储存空间中的自定义字体，您将使用系统默认的字体。" +
-                                    "\n开启后，重启应用生效。是否手动开启？");
+                    PermissionsUtil.popPermissionsDialog(getContext(),getString(R.string.no_write_sd_with_fonts));
                 }
                 break;
         }
@@ -176,24 +168,30 @@ public class CompassFragment extends BaseFragment{
         pressureView.setTextColor(Settings.locationTextColor(getContext()));
         angleView.setTextColor(Settings.locationTextColor(getContext()));
         if(Settings.isShowRootBgImg(getContext())){
-            glide.load(OtherUtil.getBackground(getContext())).skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(rootBgView);
+            glide.load(Settings.getRootBgImg(getContext())).skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(rootBgView);
         }else{
             rootBgView.setImageDrawable(null);
         }
         dialDrawable.setShowBitmap(Settings.isShowDialBgImg(getContext()));
-        glide.load(OtherUtil.getDialBackground(getContext())).asBitmap().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(new SimpleTarget<Bitmap>() {
+        glide.load(Settings.getDialBgImg(getContext())).asBitmap().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(new SimpleTarget<Bitmap>() {
             @Override
             public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                 dialDrawable.setBitmap(resource);
             }
         });
         pointerDrawable.setShowBitmap(Settings.isShowPointerBgImg(getContext()));
-        glide.load(OtherUtil.getPointerBackground(getContext())).asBitmap().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(new SimpleTarget<Bitmap>() {
+        glide.load(Settings.getPointerBgImg(getContext())).asBitmap().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(new SimpleTarget<Bitmap>() {
             @Override
             public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                 pointerDrawable.setBitmap(resource);
             }
         });
+
+        if(Settings.isOverflowAvoid(getContext())&&is3DMode){
+            dialDrawable.setScaleColor(0);
+        }else{
+            dialDrawable.setScaleColor(Settings.dialScaleColor(getContext()));
+        }
     }
 
     @Override
@@ -207,23 +205,14 @@ public class CompassFragment extends BaseFragment{
     }
 
     @Override
-    public void onModelChange(boolean b) {
-        isOldModel = b;
-    }
-
-    @Override
     public void on3DModelChange(boolean b) {
         is3DMode = b;
-        if(b){
-            dialImageView.setBackgroundResource(0);
+        dialImageView.setBackgroundResource(b?0:R.drawable.bg_circle);
+        if(Settings.isOverflowAvoid(getContext())&&b){
+            dialDrawable.setScaleColor(0);
         }else{
-            dialImageView.setBackgroundResource(R.drawable.bg_circle);
+            dialDrawable.setScaleColor(Settings.dialScaleColor(getContext()));
         }
-    }
-
-    @Override
-    public void onCameraModelChange(boolean b) {
-        isCameraMode = b;
     }
 
     private void formatText(float angle) {
@@ -269,29 +258,29 @@ public class CompassFragment extends BaseFragment{
         //倒退5度，然后分成360份
         String orien = "";
         if (angle > -1 && angle < 1) {
-            orien = "正北" + format(angle);
+            orien = getString(R.string.north) + format(angle);
         } else if (angle > 1 && angle < 45) {
-            orien = "北偏东" + format(angle);
+            orien = getString(R.string.north_east) + format(angle);
         } else if (angle > 45 && angle < 89) {
-            orien = "东偏北" + format(90 - angle);
+            orien = getString(R.string.east_north) + format(90 - angle);
         } else if (angle > 89 && angle < 91) {
-            orien = "正东" + format(angle - 90);
+            orien = getString(R.string.east) + format(angle - 90);
         } else if (angle > 91 && angle < 135) {
-            orien = "东偏南" + format(angle - 90);
+            orien = getString(R.string.east_south) + format(angle - 90);
         } else if (angle > 135 && angle < 179) {
-            orien = "南偏东" + format(180 - angle);
+            orien = getString(R.string.south_east) + format(180 - angle);
         } else if (angle > 179 || angle < -179) {
-            orien = "正南" + format(angle - 180);
+            orien = getString(R.string.south) + format(angle - 180);
         } else if (angle < -1 && angle > -45) {
-            orien = "北偏西" + format(-angle);
+            orien = getString(R.string.north_west) + format(-angle);
         } else if (angle < -45 && angle > -89) {
-            orien = "西偏北" + format(90 + angle);
+            orien = getString(R.string.west_north) + format(90 + angle);
         } else if (angle < -89 && angle > -91) {
-            orien = "正西" + format(-angle - 90);
+            orien = getString(R.string.west) + format(-angle - 90);
         } else if (angle < -91 && angle > -134) {
-            orien = "西偏南" + format(-angle - 90);
+            orien = getString(R.string.west_south) + format(-angle - 90);
         } else if (angle < -136 && angle > -179) {
-            orien = "南偏西" + format(180 + angle);
+            orien = getString(R.string.south_west) + format(180 + angle);
         }
         return orien;
     }
@@ -319,31 +308,35 @@ public class CompassFragment extends BaseFragment{
         double longitude = location.getLongitude();
         double latitude = location.getLatitude();
 
-        sb.append(latitude>= 0.0f?"北纬:":"南纬:");
+        sb.append(latitude>= 0.0f?getString(R.string.north_latitude):getString(R.string.south_latitude));
         sb.append(String.valueOf(Math.abs(latitude)));
         sb.append("\n");
-        sb.append(longitude>= 0.0f?"东经:":"西经:");
+        sb.append(longitude>= 0.0f?getString(R.string.east_longitude):getString(R.string.west_longitude));
         sb.append(String.valueOf(Math.abs(longitude)));
         if(location.hasAccuracy()){
             //如果有精度描述
             float accuracy = location.getAccuracy();
-            sb.append("\n精度:");
+            sb.append("\n");
+            sb.append(getString(R.string.accuracy));
             sb.append(String.valueOf(Math.abs(accuracy)));
-            sb.append("m");
+            sb.append(getString(R.string.meter));
         }
         if(location.hasAltitude()){
             //如果有海拔描述
-            sb.append("\n海拔:");
+            sb.append("\n");
+            sb.append(getString(R.string.altitude));
             sb.append(String.valueOf(Math.abs(location.getAltitude())));
+            sb.append(getString(R.string.meter));
         }
         if(location.hasBearing()){
             //如果有方向
         }
         if(location.hasSpeed()){
             //如果有速度
-            sb.append("\n速度:");
+            sb.append("\n");
+            sb.append(getString(R.string.speed));
             sb.append(String.valueOf(Math.abs(location.getSpeed())));
-            sb.append("m/s");
+            sb.append(getString(R.string.meters_per_second));
         }
 
         locationView.setText(sb.toString());
@@ -356,13 +349,14 @@ public class CompassFragment extends BaseFragment{
             pressureView.setVisibility(View.VISIBLE);
         String str = locationView.getText().toString();
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("气压:");
+        stringBuilder.append(getString(R.string.pressure));
         stringBuilder.append(decimalFormat.format(hPa));
-        stringBuilder.append("hPa");
-        if(!str.contains("海拔")){
-            stringBuilder.append("\n海拔:");
+        stringBuilder.append(getString(R.string.hpa));
+        if(!str.contains(getString(R.string.altitude))){
+            stringBuilder.append("\n");
+            stringBuilder.append(getString(R.string.altitude));
             stringBuilder.append(decimalFormat.format(altitude));
-            stringBuilder.append("m");
+            stringBuilder.append(getString(R.string.meter));
         }
         pressureView.setText(stringBuilder.toString());
     }

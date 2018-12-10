@@ -223,15 +223,15 @@ public class PermissionsUtil {
      * @param msg 消息内容
      */
     public static void popPermissionsDialog(final Context context, String msg){
-        new AlertDialog.Builder(context).setTitle("提示")
+        new AlertDialog.Builder(context).setTitle(context.getString(R.string.dialog_title_hint))
                 .setMessage(msg).setIcon(R.mipmap.ic_launcher_round)
-                .setPositiveButton("前去设置", new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.dialog_btn_travel_to, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         startAppSettings(context);
                         dialog.dismiss();
                     }
-                }).setNegativeButton("不用了", new DialogInterface.OnClickListener() {
+                }).setNegativeButton(R.string.dialog_btn_no, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
