@@ -6,27 +6,6 @@
     <string name="title_activity_about">关于</string>
     <string name="BottomSheetBehavior">android.support.design.widget.BottomSheetBehavior</string>
 
-    <string name="key_dial_bg_color">DIAL_BG_COLOR</string>
-    <string name="key_dial_scale_color">DIAL_SCALE_COLOR</string>
-    <string name="key_dial_text_color">DIAL_TEXT_COLOR</string>
-    <string name="key_pointer_color">POINTER_COLOR</string>
-    <string name="key_pointer_bg_color">POINTER_BG_COLOR</string>
-    <string name="key_root_bg_color">ROOT_BG_COLOR</string>
-    <string name="key_location_text_color">LOCATION_TEXT_COLOR</string>
-    <string name="key_root_bg_image_state">ROOT_BG_IMAGE_STATE</string>
-    <string name="key_root_bg_image">ROOT_BG_IMAGE</string>
-    <string name="key_dial_bg_image_state">DIAL_BG_IMAGE_STATE</string>
-    <string name="key_dial_bg_image">DIAL_BG_IMAGE</string>
-    <string name="key_pointer_bg_image_state">POINTER_BG_IMAGE_STATE</string>
-    <string name="key_pointer_bg_image">POINTER_BG_IMAGE</string>
-    <string name="key_show_setting_btn">SHOW_SETTING_BTN</string>
-    <string name="key_stable_mode">STABLE_MODE</string>
-    <string name="key_rotating_foreground">ROTATING_FOREGROUND</string>
-    <string name="key_old_api">OLD_API</string>
-    <string name="key_3d_mode">3D_MODE</string>
-    <string name="key_camera_mode">CAMERA_MODE</string>
-    <string name="key_chinese_mode">CHINESE_MODE</string>
-    <string name="key_overflow_avoid">OVERFLOW_AVOID</string>
     <string name="dialog_title_hint">提示</string>
     <string name="dialog_message_clone">欢迎更新至新版本，本版本设置界面以及架构做了完全的重构，结构更加简洁，也更加易用。但是架构的变化导致了数据的不通用。\n值得注意的是：您的选择可能会导致应用有部分的问题，如果出现问题，您可以清除用户数据来恢复。\n因此，您希望将旧数据克隆到新版本吗？</string>
     <string name="dialog_btn_no_remind">不再提醒</string>
@@ -126,4 +105,7 @@
     <string name="meters_per_second">m/s</string>
     <string name="pressure">气压:</string>
     <string name="hpa">hPa</string>
+    <string name="title_noise_reduction">波动降噪</string>
+    <string name="summary_on_noise_reduction">已启动，将会根据变化趋势来降低表盘或指针的抖动</string>
+    <string name="summary_off_noise_reduction">已关闭降噪，您将看到最真实的数据</string>
 </resources>

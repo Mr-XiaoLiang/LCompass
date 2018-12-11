@@ -115,5 +115,11 @@
             android:defaultValue="true"
             android:summaryOn="@string/summary_on_overflow_avoid"
             android:summaryOff="@string/summary_off_overflow_avoid"/>
+        <SwitchPreference
+            android:key="@string/key_noise_reduction"
+            android:title="@string/title_noise_reduction"
+            android:defaultValue="true"
+            android:summaryOn="@string/summary_on_noise_reduction"
+            android:summaryOff="@string/summary_off_noise_reduction"/>
     </PreferenceCategory>
 </PreferenceScreen>

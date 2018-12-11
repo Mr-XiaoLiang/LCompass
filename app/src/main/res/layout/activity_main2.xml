@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.liang.lollipop.lcompass.activity.MainActivity">
+    <TextureView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/surfaceView"/>
+    <fragment
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/compassFragment"
+        android:name="com.liang.lollipop.lcompass.fragment.CompassFragment2"/>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="right"
+        android:layout_marginTop="30dp">
+
+        <ImageView
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_camera_black_24dp"
+            android:id="@+id/cameraModeChangeBtn"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_margin="10dp"/>
+
+        <ImageView
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_3d_rotation_black_24dp"
+            android:id="@+id/d3ModelChangeBtn"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_margin="10dp"/>
+
+        <ImageView
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_bubble_chart_black_24dp"
+            android:id="@+id/modelChangeBtn"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_margin="10dp"/>
+
+        <ImageView
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_explore_black_24dp"
+            android:id="@+id/typeChangeBtn"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_margin="10dp"/>
+
+        <ImageView
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:visibility="gone"
+            android:tint="#FF888888"
+            android:id="@+id/settingBtn"
+            android:src="@drawable/ic_settings_white_24dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_margin="10dp"/>
+    </LinearLayout>
+</FrameLayout>

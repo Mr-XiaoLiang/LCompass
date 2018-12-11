@@ -6,27 +6,28 @@
     <string name="title_activity_about">About Us</string>
     <string name="BottomSheetBehavior">android.support.design.widget.BottomSheetBehavior</string>
 
-    <string name="key_dial_bg_color">DIAL_BG_COLOR</string>
-    <string name="key_dial_scale_color">DIAL_SCALE_COLOR</string>
-    <string name="key_dial_text_color">DIAL_TEXT_COLOR</string>
-    <string name="key_pointer_color">POINTER_COLOR</string>
-    <string name="key_pointer_bg_color">POINTER_BG_COLOR</string>
-    <string name="key_root_bg_color">ROOT_BG_COLOR</string>
-    <string name="key_location_text_color">LOCATION_TEXT_COLOR</string>
-    <string name="key_root_bg_image_state">ROOT_BG_IMAGE_STATE</string>
-    <string name="key_root_bg_image">ROOT_BG_IMAGE</string>
-    <string name="key_dial_bg_image_state">DIAL_BG_IMAGE_STATE</string>
-    <string name="key_dial_bg_image">DIAL_BG_IMAGE</string>
-    <string name="key_pointer_bg_image_state">POINTER_BG_IMAGE_STATE</string>
-    <string name="key_pointer_bg_image">POINTER_BG_IMAGE</string>
-    <string name="key_show_setting_btn">SHOW_SETTING_BTN</string>
-    <string name="key_stable_mode">STABLE_MODE</string>
-    <string name="key_rotating_foreground">ROTATING_FOREGROUND</string>
-    <string name="key_old_api">OLD_API</string>
-    <string name="key_3d_mode">3D_MODE</string>
-    <string name="key_camera_mode">CAMERA_MODE</string>
-    <string name="key_chinese_mode">CHINESE_MODE</string>
-    <string name="key_overflow_avoid">OVERFLOW_AVOID</string>
+    <string name="key_dial_bg_color" translatable="false">DIAL_BG_COLOR</string>
+    <string name="key_dial_scale_color" translatable="false">DIAL_SCALE_COLOR</string>
+    <string name="key_dial_text_color" translatable="false">DIAL_TEXT_COLOR</string>
+    <string name="key_pointer_color" translatable="false">POINTER_COLOR</string>
+    <string name="key_pointer_bg_color" translatable="false">POINTER_BG_COLOR</string>
+    <string name="key_root_bg_color" translatable="false">ROOT_BG_COLOR</string>
+    <string name="key_location_text_color" translatable="false">LOCATION_TEXT_COLOR</string>
+    <string name="key_root_bg_image_state" translatable="false">ROOT_BG_IMAGE_STATE</string>
+    <string name="key_root_bg_image" translatable="false">ROOT_BG_IMAGE</string>
+    <string name="key_dial_bg_image_state" translatable="false">DIAL_BG_IMAGE_STATE</string>
+    <string name="key_dial_bg_image" translatable="false">DIAL_BG_IMAGE</string>
+    <string name="key_pointer_bg_image_state" translatable="false">POINTER_BG_IMAGE_STATE</string>
+    <string name="key_pointer_bg_image" translatable="false">POINTER_BG_IMAGE</string>
+    <string name="key_show_setting_btn" translatable="false">SHOW_SETTING_BTN</string>
+    <string name="key_stable_mode" translatable="false">STABLE_MODE</string>
+    <string name="key_rotating_foreground" translatable="false">ROTATING_FOREGROUND</string>
+    <string name="key_old_api" translatable="false">OLD_API</string>
+    <string name="key_3d_mode" translatable="false">3D_MODE</string>
+    <string name="key_camera_mode" translatable="false">CAMERA_MODE</string>
+    <string name="key_chinese_mode" translatable="false">CHINESE_MODE</string>
+    <string name="key_overflow_avoid" translatable="false">OVERFLOW_AVOID</string>
+    <string name="key_noise_reduction" translatable="false">NOISE_REDUCTION</string>
     <string name="dialog_title_hint">Warning</string>
     <string name="dialog_message_clone">Welcome to update to the new version, this version of the setup interface and architecture to do a complete refactoring, the structure is more concise, and more easy to use. But changes in the architecture lead to data is not common. \n It is worth noting that your choice may cause some problems with the application. If a problem occurs, you can clear the user data to recover. \n So do you want to clone old data to the new version?</string>
     <string name="dialog_btn_no_remind">No remind</string>
@@ -126,4 +127,7 @@
     <string name="meters_per_second">m/s</string>
     <string name="pressure">Pressure:</string>
     <string name="hpa">hPa</string>
+    <string name="title_noise_reduction"> fluctuation noise reduction </string>
+    <string name="summary_on_noise_reduction"> has been started, will reduce the jitter of the dial or pointer according to the trend </string>
+    <string name="summary_off_noise_reduction"> noise reduction is turned off, you will see the most real data </string>
 </resources>

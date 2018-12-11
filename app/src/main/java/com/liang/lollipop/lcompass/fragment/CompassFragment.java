@@ -257,29 +257,29 @@ public class CompassFragment extends BaseFragment{
     private String getOrientation(float angle) {
         //倒退5度，然后分成360份
         String orien = "";
-        if (angle > -1 && angle < 1) {
+        if (angle >= -1 && angle <= 1) {
             orien = getString(R.string.north) + format(angle);
-        } else if (angle > 1 && angle < 45) {
+        } else if (angle > 1 && angle <= 45) {
             orien = getString(R.string.north_east) + format(angle);
-        } else if (angle > 45 && angle < 89) {
+        } else if (angle > 45 && angle <= 89) {
             orien = getString(R.string.east_north) + format(90 - angle);
-        } else if (angle > 89 && angle < 91) {
+        } else if (angle > 89 && angle <= 91) {
             orien = getString(R.string.east) + format(angle - 90);
-        } else if (angle > 91 && angle < 135) {
+        } else if (angle > 91 && angle <= 135) {
             orien = getString(R.string.east_south) + format(angle - 90);
-        } else if (angle > 135 && angle < 179) {
+        } else if (angle > 135 && angle <= 179) {
             orien = getString(R.string.south_east) + format(180 - angle);
-        } else if (angle > 179 || angle < -179) {
-            orien = getString(R.string.south) + format(angle - 180);
-        } else if (angle < -1 && angle > -45) {
+        } else if (angle > 179 || angle <= -179) {
+            orien = getString(R.string.south) + format( 180 - Math.abs(angle));
+        } else if (angle < -1 && angle >= -45) {
             orien = getString(R.string.north_west) + format(-angle);
-        } else if (angle < -45 && angle > -89) {
+        } else if (angle < -45 && angle >= -89) {
             orien = getString(R.string.west_north) + format(90 + angle);
-        } else if (angle < -89 && angle > -91) {
+        } else if (angle < -89 && angle >= -91) {
             orien = getString(R.string.west) + format(-angle - 90);
-        } else if (angle < -91 && angle > -134) {
+        } else if (angle < -91 && angle >= -134) {
             orien = getString(R.string.west_south) + format(-angle - 90);
-        } else if (angle < -136 && angle > -179) {
+        } else if (angle < -136 && angle >= -179) {
             orien = getString(R.string.south_west) + format(180 + angle);
         }
         return orien;
